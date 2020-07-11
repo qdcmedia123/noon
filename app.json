@@ -1,0 +1,17 @@
+{
+  "name": "testNative",
+  "displayName": "testNative",
+  "expo": {
+    "name": "testNative",
+    "slug": "testNative",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
