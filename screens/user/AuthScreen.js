@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 
 import Input from '../../components/UI/Input';
 
-
+import * as authActions from '../../store/actions/auth';
 
 
 
@@ -67,16 +67,28 @@ const AuthScreen = props => {
     if(error) {
       Alert.alert('An Error Occurred!', error, [{text: 'Okay'}]);
     }
-    if(isSignup) {
-      props.navigation.setParams({screen:'Signup'})
-    } else {
-      
-      props.navigation.setParams({screen:'Login'})
-    }
-  }, [error, isSignup])
+  }, [error])
+
 
  
-
+  const authHandler = async() => {
+    let action;
+    action = authActions.login(
+      formState.inputValues.email,
+      formState.inputValues.password
+    );
+    setError(null);
+    setIsLoading(true);
+    try{
+      await dispatch(action);
+      props.navigation.navigate('Home');
+    } catch(error) {
+      console.log(error);
+      setError(error.message);
+      setIsLoading(false);
+    }
+  
+  }
   const inputChangeHandler = useCallback(
     (inputIdentifier, inputValue, inputValidity) => {
       dispatchFormState({
@@ -131,9 +143,9 @@ const AuthScreen = props => {
             <View style={styles.buttonContainer}>
             {isLoading ? <ActivityIndicator size = 'small'/> :
               <Button
-                title= {isSignup ? 'Sign Up' : 'Login'}
+                title=  'Login'
                 style={styles.actionButton}
-                
+                onPress={authHandler}
               />}
             </View>
             <View style={styles.buttonContainer}>

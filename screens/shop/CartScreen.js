@@ -5,14 +5,16 @@ import { Item, Icon, View, Text, Picker, Form, Button, Input } from "native-base
 import {useSelector, useDispatch} from 'react-redux'
 import * as  cartActions from '../../store/actions/cart'
 
-function App() {
+
+function App(props) {
   const [qty, setQty] = useState(1);
   const [deliveryto, setDeliveryto] = useState("");
   
  
  // Get the cart 
- const cart = useSelector(state => state.cart);
- 
+ const {cart, auth} = useSelector(state => state);
+
+ console.log(auth);
  const dispatch = useDispatch();
  const cartItems = useSelector(state => {
    const transformedCartItems = [];
@@ -72,6 +74,13 @@ const orderNow = useCallback(() => {
   // delivery to
   // delivery amount 
   // need to check if user is authenticated 
+  if(auth.token === null) {
+    // Redirect the user to the login 
+    return props.navigation.navigate('AuthUser')
+  }
+
+  console.log('Doing the payment');
+  
 
 }, [cartItems, deliveryto]);
 
@@ -302,7 +311,9 @@ const orderNow = useCallback(() => {
     </ScrollView>
       <View style={[styles.specificationView, styles.cartAndQty]}>
         <Button danger style={styles.orderNowButton} onPress = { () => orderNow()}>
-            <Text   adjustsFontSizeToFit style={styles.buyText}>BUY {cartTotal()} ITEMS FOR AED {moneyFormate(cart.totalAmount)}</Text>
+            <Text   adjustsFontSizeToFit style={styles.buyText}>BUY {cartTotal()} ITEMS FOR AED {
+                   moneyFormate(cart.totalAmount + (cart.totalAmount < 100 ? 10 : 0)) 
+            }</Text>
         </Button>
         
       </View>
