@@ -18,7 +18,7 @@ import AccountScreen from '../screens/user/AccountScreen';
 import ProductDetailsScreen from '../screens/shop/ProductDetailScreen';
 import AuthScreen from '../screens/user/AuthScreen';
 import SignupScreen from '../screens/user/SignupScreen';
-
+import ShippingDetailsScreen from '../screens/shop/ShippingDetailsScreen';
 
 // Use reducer 
 
@@ -127,6 +127,19 @@ const SignupNavigator = createStackNavigator(
     defaultNavigationOptions: defaultStackNavOptions
   }
 );
+
+// Shipping Navigator 
+const ShippingDetailsNavigator = createStackNavigator(
+  {
+    ShippingDetails: ShippingDetailsScreen
+
+  },
+  {
+    // initialRouteName: 'Categories',
+    defaultNavigationOptions: defaultStackNavOptions
+  }
+);
+
 
 
 
@@ -245,6 +258,13 @@ const MealsFavTabNavigator =
         screen: SignupNavigator,
         navigationOptions: {
           drawerLabel :() => null
+        }
+        
+      },
+      ShippingDetails: {
+        screen: ShippingDetailsNavigator,
+        navigationOptions: {
+          drawerLabel :() => 'Shipping Details'
         }
         
       }

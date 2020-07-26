@@ -79,6 +79,10 @@ const orderNow = useCallback(() => {
     return props.navigation.navigate('AuthUser')
   }
 
+  // Other wise It will go the the shipping details screen
+  // Create shipping details screen 
+  // There will bee add shippin as well
+
   console.log('Doing the payment');
   
 
