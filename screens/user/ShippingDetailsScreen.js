@@ -1,10 +1,14 @@
 import React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, Button, TouchableOpacity, Dimensions} from 'react-native';
 import Ionicons from "react-native-vector-icons/FontAwesome5";
+
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 function App() {
      return <View>
-          
+         
           <TouchableOpacity>
           <View style ={[styles.fistRow]}>
                <View style={[styles.specificationView, styles.custom0]}>
@@ -81,22 +85,64 @@ function App() {
          
           </TouchableOpacity>
           
-     
-     </View>
+          <TouchableOpacity style = {styles.addNewButtonWarper}>
+            <Text style = {styles.poppinsRegular}><Ionicons name = "plus" size = {14} />  Add a new address</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style = {styles.footer}>
+            <Text style = {[styles.poppinsRegular, styles.continue]}><Ionicons name = "plus" size = {14} /> Continue</Text>
+          </TouchableOpacity>
+          
+
+    
+   
+</View>
 }
 
 
 const styles = StyleSheet.create({
+  continue:{
+    fontFamily:'Poppins-SemiBold',
+    fontSize:14
+  },
+  footer: {
+    position: 'absolute',
+    height: 96,
+    left: 0, 
+    top: windowHeight - 100, 
+    width: windowWidth,
+    backgroundColor:'#008080',
+    flex:1,
+    alignItems:'center',
+    padding:15,
+   
+
+},
+
+  addNewAddTxt:{
+    fontFamily:''
+  },
+  addNewButtonWarper:{
+    padding:12,
+    backgroundColor:'#fff',
+    alignItems:'center',
+    textAlign:'center',
+    marginTop:15,
+  
+  },
+  addNewAdd:{
+    backgroundColor:'#fff',
+    color:'#000000'  },
   custom0: {
     backgroundColor:'#fff',
     padding:15,
-    borderBottomColor:'blue',
+    
     borderBottomWidth:1
   },
   custom1: {
     backgroundColor:'#fff',
     marginTop:55,
-    borderBottomColor:'blue',
+    borderBottomColor:'#f0f0f0',
     borderBottomWidth:1
   },
   circleIconCheck:{

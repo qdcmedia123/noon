@@ -18,7 +18,8 @@ import AccountScreen from '../screens/user/AccountScreen';
 import ProductDetailsScreen from '../screens/shop/ProductDetailScreen';
 import AuthScreen from '../screens/user/AuthScreen';
 import SignupScreen from '../screens/user/SignupScreen';
-import ShippingDetailsScreen from '../screens/shop/ShippingDetailsScreen';
+import ShippingDetailsScreen from '../screens/user/ShippingDetailsScreen';
+import EditShippingDetails from '../screens/user/EditShippingDetails';
 
 // Use reducer 
 
@@ -267,7 +268,13 @@ const MealsFavTabNavigator =
           drawerLabel :() => 'Shipping Details'
         }
         
-      }
+      },
+      EditShippingDetails:{
+        screen:EditShippingDetails,
+        navigationOptions: {
+          drawerLabel :() => 'Edit shipping Details'
+        }
+      },
       
 
     },{
