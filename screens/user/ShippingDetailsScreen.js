@@ -86,11 +86,11 @@ function App() {
           </TouchableOpacity>
           
           <TouchableOpacity style = {styles.addNewButtonWarper}>
-            <Text style = {styles.poppinsRegular}><Ionicons name = "plus" size = {14} />  Add a new address</Text>
+          <Ionicons name = "close" size = {14} /> <Text style = {styles.poppinsRegular}>  Add a new address</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style = {styles.footer}>
-            <Text style = {[styles.poppinsRegular, styles.continue]}><Ionicons name = "plus" size = {14} /> Continue</Text>
+            <Text style = {[styles.poppinsRegular, styles.continue]}><Ionicons name = "home" size = {14} /> Continue</Text>
           </TouchableOpacity>
           
 
