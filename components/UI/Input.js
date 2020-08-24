@@ -67,7 +67,7 @@ const Input = props => {
 
   return (
     <View style={styles.formControl}>
-      <Text style={styles.label}>{props.label}</Text>
+      {typeof props.label !== 'undefined' && <Text style={styles.label}>{props.label}</Text> }
       <TextInput
         {...props}
         style={styles.input}

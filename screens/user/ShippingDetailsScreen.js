@@ -1,14 +1,65 @@
-import React from 'react';
-import {Text, View, StyleSheet, Button, TouchableOpacity, Dimensions} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Alert, Text, View, StyleSheet, Button, TouchableOpacity, Dimensions} from 'react-native';
 import Ionicons from "react-native-vector-icons/FontAwesome5";
+import * as Permissions from 'expo-permissions'
+import * as Location from 'expo-location';
 
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-function App() {
-     return <View>
-         
+
+function App(props) {
+  const [isFetching, setIsFetching] = useState(false);
+
+
+
+
+// Lets verify the permission is set const
+const verifyPermissions = async() => {
+    const result = await Permissions.askAsync(Permissions.LOCATION);
+    if(result.status !== 'granted') {
+        Alert.alert(
+                    'Insufficient Permissions!',
+                    'You need to grate location permission to use this app.',
+                    [{text: 'Okay'}]
+                );
+        return false;
+    }
+    return true;
+}
+
+const getLocationHandler = async() => {
+    const hasPermission = await verifyPermissions();
+    if(!hasPermission) {
+        return;
+    }
+
+    try {
+        setIsFetching(true);
+        const location = await Location.getCurrentPositionAsync({
+            timeout: 5000
+        });
+
+        setPickedLocation({
+            lat: location.coords.latitude,
+            lng: location.coords.longitude
+        });
+        props.onLocationPicked({
+            lat: location.coords.latitude,
+            lng: location.coords.longitude
+        });
+    } catch(err) {
+        Alert.alert(
+            'Count not fetch location!',
+            'Please try again later or pick a location on the map',
+            [{text: 'Okay'}]
+        );
+        
+    }
+    setIsFetching(false);
+}
+     return <View>         
           <TouchableOpacity>
           <View style ={[styles.fistRow]}>
                <View style={[styles.specificationView, styles.custom0]}>
@@ -80,16 +131,15 @@ function App() {
             <View style={[styles.specificationView, styles.stylesTd]}><Text style = {styles.tdText}>Mobile Number</Text></View>
             <View style={[styles.specificationView, styles.stylesTd]}><Text style = {[styles.tableBody]}>+971-56-5973854 <Ionicons name = "check-circle" size={20} style={styles.circleIconCheck}></Ionicons></Text></View>
           </View>
-
           </View>
          
-          </TouchableOpacity>
-          
+          </TouchableOpacity>          
           <TouchableOpacity style = {styles.addNewButtonWarper}>
-          <Ionicons name = "close" size = {14} /> <Text style = {styles.poppinsRegular}>  Add a new address</Text>
+          <Text style = {styles.poppinsRegular}>  <Ionicons name = "plus" size = {14} /> Add a new address</Text>
           </TouchableOpacity>
+          {/* {() => props.navigation.navigate('Map')} */}
 
-          <TouchableOpacity style = {styles.footer}>
+          <TouchableOpacity style = {styles.footer} onPress = {() => props.navigation.navigate('Map')}>
             <Text style = {[styles.poppinsRegular, styles.continue]}><Ionicons name = "home" size = {14} /> Continue</Text>
           </TouchableOpacity>
           

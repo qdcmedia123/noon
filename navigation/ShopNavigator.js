@@ -20,6 +20,7 @@ import AuthScreen from '../screens/user/AuthScreen';
 import SignupScreen from '../screens/user/SignupScreen';
 import ShippingDetailsScreen from '../screens/user/ShippingDetailsScreen';
 import EditShippingDetails from '../screens/user/EditShippingDetails';
+import MapScreen from '../screens/user/MapScreen';
 
 // Use reducer 
 
@@ -96,12 +97,10 @@ const CartNavigator = createStackNavigator(
 );
 
 const AccountNavigator = createStackNavigator({
-      Account: {
-          screen: AccountScreen,
-          navigationOptions: {
-            headerShown: false,
-          }
-      }
+      Account: AccountScreen,
+      ShippingDetails: ShippingDetailsScreen,
+      EditShippingDetails:EditShippingDetails,
+      Map: MapScreen
     });
 
 
@@ -129,17 +128,6 @@ const SignupNavigator = createStackNavigator(
   }
 );
 
-// Shipping Navigator 
-const ShippingDetailsNavigator = createStackNavigator(
-  {
-    ShippingDetails: ShippingDetailsScreen
-
-  },
-  {
-    // initialRouteName: 'Categories',
-    defaultNavigationOptions: defaultStackNavOptions
-  }
-);
 
 
 
@@ -261,21 +249,7 @@ const MealsFavTabNavigator =
           drawerLabel :() => null
         }
         
-      },
-      ShippingDetails: {
-        screen: ShippingDetailsNavigator,
-        navigationOptions: {
-          drawerLabel :() => 'Shipping Details'
-        }
-        
-      },
-      EditShippingDetails:{
-        screen:EditShippingDetails,
-        navigationOptions: {
-          drawerLabel :() => 'Edit shipping Details'
-        }
-      },
-      
+      }    
 
     },{
       contentOptions: {

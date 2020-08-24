@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useReducer, useEffect } from "react";
 import {
   Text,
   View,
@@ -6,22 +6,145 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  Dimensions
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  Alert
 } from "react-native";
+import { useDispatch } from 'react-redux';
+import CountryPicker, {
+  FlagButton,
+  Flag,
+} from "react-native-country-picker-modal";
+import DialinCode from "../../data/dialingCode";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 import Ionicons from "react-native-vector-icons/FontAwesome5";
+import Input from '../../components/UI/Input';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid
+    };
+    let updatedFormIsValid = true;
+    for (const key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValidities: updatedValidities,
+      inputValues: updatedValues
+    };
+  }
+  return state;
+};
+
+
 function App() {
-  const [value, onChangeText] = React.useState("");
+  const dispatch = useDispatch();
+ 
+  const [countryCode, setCountryCode] = useState("AE");
+  const [countryCodePhone, setCountryCodePhone] = useState("+971");
+  const [error, setError] = useState();
+  const [addressLabel, setAddressLabel] = useState('home')
+
+ 
+ 
+  useEffect(() => {
+    if(error) {
+      Alert.alert('An Error Occurred!', error, [{text: 'Okay'}]);
+    }
+  }, [error])
+
+  
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      additionalAddress:'',
+      phoneCode:countryCodePhone,
+      mobileNumber: '',
+      firstName: '',
+      lastName:'',
+      addressLabel:'home'
+    },
+    inputValidities: {
+      additionalAddress:false,
+      phoneCode:true,
+      mobileNumber: false,
+      firstName: false,
+      lastName:false,
+      addressLabel:true
+    },
+    formIsValid: false
+  });
+
+  const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
+     dispatchFormState({
+      type: FORM_INPUT_UPDATE,
+      value: inputValue,
+      isValid: inputValidity,
+      input: inputIdentifier
+    })
+  }, [dispatchFormState])
+
+
+  const dialingCode = useCallback(() => {}, [dialingCode]);
+  const lostFocusHandler =  useCallback(() => {
+      
+    // console.log(formState);
+   }, [formState]);
+   
+  const saveAddress = () => {
+    
+    if (formState.formIsValid === true) {
+      // Submit your form to the server 
+      // After sucessful the data is added 
+      // Return to the shipping screens for the client 
+
+      // Get the user id 
+
+    } else {
+      // Show error pup to the client 
+    }
+    // Check if all is goold 
+    console.log(formState);
+  }
+
+  const addressLabelChange =  useCallback((label) => {
+    dispatchFormState({
+      type: FORM_INPUT_UPDATE,
+      value: label,
+      isValid: true,
+      input: 'addressLabel'
+    })
+    
+  }, [dispatchFormState]);
+
   return (
-    <View style={[styles.container]}>
+   <ScrollView>
+      <KeyboardAvoidingView
+      behavior={Platform.OS == "ios" ? "padding" : null}
+      style={styles.container}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={[styles.container]}>
       <View style={[styles.header]}>
         <View style={[styles.row]}>
           <Image
             source={require("../../assets/img/logo.png")}
-            style={{ width: 150, height: 30, marginTop: 4 }}
+            style={{  }}
           />
 
           <TouchableOpacity style={styles.cancelBtn}>
@@ -31,11 +154,16 @@ function App() {
 
         <View style={[styles.row]}>
           <View style={[styles.flag]}>
-            <Text style={[styles.flagIcon]}>🇦🇪</Text>
+            <View style={styles.countrySelectView}>
+              <Flag {...{ countryCode, flagSize: 20 }} />
+
+             
+            </View>
           </View>
 
           <TouchableOpacity style={styles.cancelBtn}>
-            <Text style={styles.setAsDefault}>Set as a default</Text>
+            <Text 
+              style={styles.setAsDefault}>Set as a default</Text>
           </TouchableOpacity>
         </View>
 
@@ -43,10 +171,10 @@ function App() {
           <Text style={[styles.locationInformation]}>LOCATION INFORMATION</Text>
         </View>
 
-        <View style={[styles.row]}>
+        <View style={[styles.row, styles.extraPad]}>
           <View style={styles.col_md_6}>
-            <Text>Unammed Road - JLT</Text>
-            <Text>Dubai</Text>
+            <Text style={[styles.unNammed]}>Unammed Road - JLT</Text>
+            <Text style={[styles.locName]}>Dubai</Text>
           </View>
 
           <View style={[styles.col_md_6, styles.googleImageScreen]}>
@@ -56,17 +184,19 @@ function App() {
           <View style={styles.viewStyleForLine}></View>
 
           <View style={styles.col_md_12}>
-            <Text>Additional Address Details</Text>
-            <TextInput
-              style={styles.inputText}
-              onChangeText={(text) => onChangeText(text)}
-              value={value}
-              placeholder="Where you want to drop item"
+            
+            <Input
+              id="additionalAddress"
+              label="Additional address"
+              keyboardType="default"
+              required
+              minLength={2}
+              autoCapitalize="none"
+              errorText="Please enter your additional address."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              onBlur={lostFocusHandler}
             />
-          </View>
-
-          <View style={[styles.col_md_12]}>
-            <Text>Goold Image</Text>
           </View>
         </View>
 
@@ -76,108 +206,162 @@ function App() {
 
         <View style={[styles.row]}>
           <View style={[styles.col_md_12]}>
-            <Text>Mobile Number</Text>
+            <Text style={[styles.paddintb]}>Mobile Number</Text>
           </View>
 
           <View style={[styles.col_md_3]}>
-            <Text>+971</Text>
+            <Text style={[styles.countryCode]}>{countryCodePhone}</Text>
           </View>
 
-          <View style={[styles.col_md_3]}>
-            <Text>50 </Text>
-          </View>
-
-         <View style={[styles.col_md_6]}>
-            <TextInput
-              style={[styles.inputText, styles.mb10]}
-              onChangeText={(text) => onChangeText(text)}
-              value={value}
-              placeholder="Mobile Number"
-            />
-          </View>
           
-          <View style={styles.col_md_12}>
-            <Text>First Name</Text>
-            <TextInput
-              style={styles.inputText}
-              onChangeText={(text) => onChangeText(text)}
-              value={value}
-              placeholder="First Name"
+
+          <View style={[styles.col_md_6]}>
+            <Input
+              id="mobileNumber"
+              keyboardType="default"
+              required
+              minLength={8}
+              autoCapitalize="none"
+              errorText="Please enter you mobile number"
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              onBlur={lostFocusHandler}
             />
           </View>
 
           <View style={styles.col_md_12}>
-            <Text>Last Name</Text>
-            <TextInput
-              style={styles.inputText}
-              onChangeText={(text) => onChangeText(text)}
-              value={value}
-              placeholder="Last Name"
+            
+            <Input
+              id="firstName"
+              label="First Name"
+              keyboardType="default"
+              required
+              minLength={2}
+              autoCapitalize="none"
+              errorText="Please enter your first name."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              onBlur={lostFocusHandler}
             />
           </View>
 
+          <View style={styles.col_md_12}>
+            
+            <Input
+              id="lastName"
+              label="Last Name"
+              keyboardType="default"
+              required
+              minLength={2}
+              autoCapitalize="none"
+              errorText="Please enter your last name."
+              onInputChange={inputChangeHandler}
+              initialValue=""
+              onBlur={lostFocusHandler}
+            />
+          </View>
+       
+       
         </View>
         <View style={styles.homeWorkView}>
-        <Text style = {styles.addressLabel}>Address Label(Option)</Text>
+          <Text style={styles.addressLabel}>Address Label(Option)</Text>
           <View style={styles.row_non_bck}>
-            <TouchableOpacity><Text style={styles.homeWorkBtn}><Ionicons name = "home" size = {16}/> Home</Text></TouchableOpacity>
-                
-            <TouchableOpacity style= {styles.mrz}><Text style={styles.homeWorkBtnSelected}><Ionicons name = "briefcase" size = {16}/> Work</Text></TouchableOpacity>
+            <TouchableOpacity onPress = {() => addressLabelChange('home')}>
+              <Text style={formState.inputValues.addressLabel === 'home' ? styles.homeWorkBtnSelected : styles.homeWorkBtn}>
+                <Ionicons name="home" size={16} /> Home
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.mrz} onPress= {() => addressLabelChange('work')}>
+              <Text style={formState.inputValues.addressLabel === 'work' ? styles.homeWorkBtnSelected : styles.homeWorkBtn}>
+                <Ionicons name="briefcase" size={16} /> Work
+              </Text>
+            </TouchableOpacity>
           </View>
-          
         </View>
-         
-        
-        <TouchableOpacity style = {styles.footer}>
-            <Text style = {[styles.poppinsRegular, styles.continue]}> Save Address</Text>
-          </TouchableOpacity>
-         
+
+        <TouchableOpacity style={styles.footer} onPress= {() => saveAddress()}>
+          <Text style={[styles.poppinsRegular, styles.saveAddress]}>
+            {" "}
+            Save Address
+          </Text>
+        </TouchableOpacity>
       </View>
-      
     </View>
-  );
+    </TouchableWithoutFeedback>
+
+    </KeyboardAvoidingView>
+ 
+
+    </ScrollView>
+    
+ );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  
+  },
+  countryCode: {
+    fontFamily: "Poppins-Bold",
+    color: "#414551",
+  },
+
+  paddintb: {
+    paddingVertical: 10,
+    color: "#7e8597",
+  },
+  locName: {
+    color: "#8d919a",
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+  },
+  unNammed: {
+    color: "#353c42",
+    fontFamily: "Poppins-Bold",
+    fontSize: 16,
+  },
+  saveAddress: {},
   footer: {
-   
-    height: '100%',
-    width: windowWidth,
-    backgroundColor:'#008080',
-    
-    alignItems:'center',
-    padding:15,
+    height: "100%",
+
+    backgroundColor: "#008080",
+
+    alignItems: "center",
+    padding: 15,
+    marginBottom: 0,
   },
-  mrz:{
-    marginLeft:15
+  mrz: {
+    marginLeft: 15,
   },
-  homeWorkBtnSelected:{
-    fontSize:16,
-    color:'#fff',
-    borderColor:'#fff',
-    borderWidth:1,
-    paddingVertical:5,
-    paddingHorizontal:15,
-    borderRadius:50,
-    backgroundColor:'#414550'
+  homeWorkBtnSelected: {
+    fontSize: 16,
+    color: "#fff",
+    borderColor: "#fff",
+    borderWidth: 1,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 50,
+    backgroundColor: "#414550",
   },
-  homeWorkBtn:{
-    fontSize:16,
-    color:'#414550',
-    borderColor:'#414550',
-    borderWidth:1,
-    paddingVertical:5,
-    paddingHorizontal:15,
-    borderRadius:50
+  homeWorkBtn: {
+    fontSize: 16,
+    color: "#414550",
+    borderColor: "#414550",
+    borderWidth: 1,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 50,
   },
-  addressLabel:{
-    fontFamily:'Poppins-Regular',
-    color:'#8c909c',
-    lineHeight:40
+  addressLabel: {
+    fontFamily: "Poppins-Regular",
+    color: "#8c909c",
+    lineHeight: 40,
   },
-  homeWorkView:{
-   paddingVertical:15,
-   paddingHorizontal:15
+  homeWorkView: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   borderHair: {
     borderBottomColor: "black",
@@ -188,7 +372,13 @@ const styles = StyleSheet.create({
   mb10: {
     marginTop: -15,
   },
-  inputText: { height: 40, borderBottomColor: "gray", borderBottomWidth: 1 },
+  inputText: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+    borderBottomColor: "gray",
+    borderBottomWidth: 1,
+    height: 40,
+  },
   viewStyleForLine: {
     borderBottomColor: "black",
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -224,7 +414,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   locationInfoBack: {
-    padding: 15,
+    padding: 10,
   },
   locationInformation: {
     fontSize: 14,
@@ -246,7 +436,7 @@ const styles = StyleSheet.create({
   cancelBtnTxt: {
     fontFamily: "Poppins-Regular",
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     color: "#000000",
   },
   cancelBtn: {
@@ -259,18 +449,17 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     backgroundColor: "#fff",
     flexWrap: "wrap",
   },
 
   row_non_bck: {
     flexDirection: "row",
-    
+
     flexWrap: "wrap",
-  }
-  
+  },
 });
 
 export default App;
