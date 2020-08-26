@@ -46,7 +46,7 @@ const MapScreen = (props) => {
     props.navigation.setParams({ saveLocation: savePickedLocationHandler });
   }, [getCurrentLocation, savePickedLocationHandler]);
 
-  console.log(defaultLocation);
+
 
   const selectLocationHandler = (event) => {
     if (readonly) {

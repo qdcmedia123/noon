@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useReducer, useEffect } from "react";
+import React, { useState, useCallback, useReducer, useEffect, useMemo } from "react";
 import {
   Text,
   View,
@@ -19,11 +19,12 @@ import CountryPicker, {
   FlagButton,
   Flag,
 } from "react-native-country-picker-modal";
-import DialinCode from "../../data/dialingCode";
-
+import {useSelector} from 'react-redux';
+import jwt_decode from 'jwt-decode';
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
+import MapPreview from '../../components/map/MapPreview';
 import Ionicons from "react-native-vector-icons/FontAwesome5";
 import Input from '../../components/UI/Input';
 
@@ -53,16 +54,17 @@ const formReducer = (state, action) => {
 };
 
 
-function App() {
+function App(props) {
   const dispatch = useDispatch();
  
   const [countryCode, setCountryCode] = useState("AE");
   const [countryCodePhone, setCountryCodePhone] = useState("+971");
   const [error, setError] = useState();
   const [addressLabel, setAddressLabel] = useState('home')
+  const getLocation = props.navigation.getParam("pickedLocation");
+  const auth = useSelector(state => state.auth);
+  console.log(auth.token);
 
- 
- 
   useEffect(() => {
     if(error) {
       Alert.alert('An Error Occurred!', error, [{text: 'Okay'}]);
@@ -112,14 +114,18 @@ function App() {
       // Submit your form to the server 
       // After sucessful the data is added 
       // Return to the shipping screens for the client 
+      // Send http request to send and return back to shipping screens
 
       // Get the user id 
+      const {email, user_id} = jwt_decode(auth.token);
+      formState.inputValues.location = getLocation;
+      console.log(formState);
 
     } else {
       // Show error pup to the client 
     }
     // Check if all is goold 
-    console.log(formState);
+    
   }
 
   const addressLabelChange =  useCallback((label) => {
@@ -131,6 +137,10 @@ function App() {
     })
     
   }, [dispatchFormState]);
+
+  const pickOnMapHandler = () => {
+    props.navigation.navigate('Map');
+}
 
   return (
    <ScrollView>
@@ -178,7 +188,8 @@ function App() {
           </View>
 
           <View style={[styles.col_md_6, styles.googleImageScreen]}>
-            <Text>Goold Image</Text>
+          <MapPreview onPress={pickOnMapHandler} style = {styles.mapPreview} location={getLocation}>
+          </MapPreview>
           </View>
 
           <View style={styles.viewStyleForLine}></View>
@@ -298,7 +309,20 @@ function App() {
  );
 }
 
+
+
+
 const styles = StyleSheet.create({
+  mapPreview: {
+    marginBottom: 10,
+    width: '100%',
+    height: 150,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
   container: {
     flex: 1,
   

@@ -2,6 +2,7 @@ import { AsyncStorage } from "react-native";
 export const SIGNUP = "SIGNUP";
 export const LOGOUT = "LOGOUT";
 export const AUTHENTICATE = "AUTHENTICATE";
+export const CREATE_SHIPPING = "CREATE_SHIPPING";
 
 export const authenticate = (userId, token, expiryTime) => {
   return (dispatch) => {
@@ -11,6 +12,33 @@ export const authenticate = (userId, token, expiryTime) => {
 };
 
 let timer;
+
+export const create_shipping = (data) => {
+ return async (dispatch, getState) => {
+   const date = new Date();
+   const token = getState().auth.token;
+   const userId = getState().auth.userId;
+
+  const response = await fetch('https://mobileshop-458de.firebaseio.com/shipping/${userId}.json?auth=${token}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      data
+    })
+  })
+
+  if(!response.ok) {
+    throw new Error('Could not save the shipping address.');
+  }
+
+  dispatch({
+    type: CREATE_SHIPPING,
+    payload: data
+  })
+ }
+}
 
 export const signup = (firstName, lastName, email, password) => {
   return async (dispatch) => {
