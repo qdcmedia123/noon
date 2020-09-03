@@ -15,23 +15,25 @@ let timer;
 
 export const create_shipping = (data) => {
  return async (dispatch, getState) => {
-   const date = new Date();
+
    const token = getState().auth.token;
    const userId = getState().auth.userId;
-
-  const response = await fetch('https://mobileshop-458de.firebaseio.com/shipping/${userId}.json?auth=${token}', {
+  console.log(token)
+  const response = await fetch(`https://mobileshop-458de.firebaseio.com/shipping/${userId}.json?auth=${token}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      data
+      ...data
     })
   })
 
   if(!response.ok) {
     throw new Error('Could not save the shipping address.');
   }
+
+  console.log(response);
 
   dispatch({
     type: CREATE_SHIPPING,

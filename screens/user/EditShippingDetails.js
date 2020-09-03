@@ -27,6 +27,8 @@ const windowHeight = Dimensions.get("window").height;
 import MapPreview from '../../components/map/MapPreview';
 import Ionicons from "react-native-vector-icons/FontAwesome5";
 import Input from '../../components/UI/Input';
+import * as authActions from '../../store/actions/auth';
+
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -108,8 +110,8 @@ function App(props) {
     // console.log(formState);
    }, [formState]);
    
-  const saveAddress = () => {
-    
+  const saveAddress = async() => {
+    console.log(formState)
     if (formState.formIsValid === true) {
       // Submit your form to the server 
       // After sucessful the data is added 
@@ -119,7 +121,14 @@ function App(props) {
       // Get the user id 
       const {email, user_id} = jwt_decode(auth.token);
       formState.inputValues.location = getLocation;
-      console.log(formState);
+      const saveShipping = authActions.create_shipping(formState.inputValues);
+      try{
+        await dispatch(saveShipping);
+        props.navigation.navigate('ShippingDetails');
+      } catch (err) {
+        console.log(err);
+      }
+      
 
     } else {
       // Show error pup to the client 
