@@ -65,13 +65,18 @@ function App(props) {
   const [addressLabel, setAddressLabel] = useState('home')
   const getLocation = props.navigation.getParam("pickedLocation");
   const auth = useSelector(state => state.auth);
-  console.log(auth.token);
+  // Check if the edit mode is one 
+  const shippingAddressId = props.navigation.getParam("shippingAddressId");
+  const isEditMode = props.navigation.getParam("editMode");
 
+ 
   useEffect(() => {
     if(error) {
       Alert.alert('An Error Occurred!', error, [{text: 'Okay'}]);
     }
-  }, [error])
+    setFromDataFromEditShipping();
+  }, [error, setFromDataFromEditShipping])
+
 
   
   const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -93,6 +98,19 @@ function App(props) {
     },
     formIsValid: false
   });
+
+
+
+  const setFromDataFromEditShipping = useCallback(() => {
+    if(typeof shippingAddressId !== 'undefined' && typeof isEditMode !== 'undefined' && isEditMode === true) {
+      let ShippingDetails = props.navigation.getParam("shippingDeatils");
+      let { additionalAddress, phoneCode, mobileNumber, firstName, lastName,addressLabel} = ShippingDetails;
+      dispatchFormState({type: FORM_INPUT_UPDATE, value:additionalAddress, isValid:true, input: 'additionalAddress'});
+      
+      console.log('in edit mode')
+      console.log(ShippingDetails);
+    }
+  }, [shippingAddressId, isEditMode, dispatchFormState, formState])
 
   const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
      dispatchFormState({
@@ -214,7 +232,7 @@ function App(props) {
               autoCapitalize="none"
               errorText="Please enter your additional address."
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={formState.inputValues.additionalAddress || ''}
               onBlur={lostFocusHandler}
             />
           </View>

@@ -18,7 +18,10 @@ export const create_shipping = (data) => {
 
    const token = getState().auth.token;
    const userId = getState().auth.userId;
-  console.log(token)
+  // Before saving we need to check if there is shipping is already exist for the user 
+  // If exists then 
+
+
   const response = await fetch(`https://mobileshop-458de.firebaseio.com/shipping/${userId}.json?auth=${token}`, {
     method: 'POST',
     headers: {

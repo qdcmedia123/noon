@@ -23,6 +23,7 @@ function App(props) {
   const [isFetching, setIsFetching] = useState(false);
   const { token, userId } = useSelector((state) => state.auth);
   const [shippingAddresses, setShippingAddresses] = useState(null);
+  const [defaultAddress, setDefaultAddress] = useState(null)
 
   // Let fetch data data
   const fetchUserShippingDetails = useCallback(async () => {
@@ -46,8 +47,9 @@ function App(props) {
           for(const key in resData) {
             loadedOrders[key] = resData[key];
           }
-          console.log(loadedOrders);
-          setShippingAddresses([loadedOrders]);
+         console.log(resData)
+          Object.entries(resData).forEach((entry) => console.log(entry[0]))
+          setShippingAddresses(resData);
         }
         setIsFetching(false);
         
@@ -57,10 +59,14 @@ function App(props) {
       }
     }
   }, []);
-
+ 
+  // default address 
+  
   useEffect(() => {
     fetchUserShippingDetails();
   }, [fetchUserShippingDetails]);
+
+
   // Lets verify the permission is set const
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.LOCATION);
@@ -105,85 +111,95 @@ function App(props) {
     setIsFetching(false);
   };
 
-  const getShippingInCompoennt = useMemo(() => {
+  const changeShippingBlock =  useCallback((id) => {
+    setDefaultAddress(id)
+  }, [defaultAddress])
 
-  }, [shippingAddresses])
+  const editShippingAddress = (shippingID, details) => {
+    props.navigation.navigate('EditShippingDetails', {shippingAddressId:shippingID, editMode: true, shippingDeatils: details})
+    console.log(shippingID)
+  }
+  
+  
+  const getShippingInCompoennt = useMemo(() => {
+     if(!isFetching) {
+       if(shippingAddresses !== null && Object.entries(shippingAddresses).length > 0) {
+       return Object.entries(shippingAddresses).map((entry, index) => <TouchableOpacity onPress = {() => changeShippingBlock(entry[0])} key = {index} style={[styles.blockTouch, entry[0] == defaultAddress ? styles.selectedAddress : styles.none]}>
+       <View style={[styles.fistRow]}>
+         <View style={[styles.specificationView, styles.custom0]}>
+           <Ionicons name="map-marker" size={20} />
+       <Text> {entry[1]['addressLabel']}</Text>
+         </View>
+         <View style={[styles.specificationView, styles.custom0]}>
+           <TouchableOpacity style={[styles.specificationView]} onPress = {() => editShippingAddress(entry[0], entry[1])}>
+             <Ionicons name="edit" size={20} />
+             <Text> Edit </Text>
+           </TouchableOpacity>
+           <TouchableOpacity style={[styles.specificationView]} c>
+             <Ionicons name="trash" size={20} />
+             <Text> Delete</Text>
+           </TouchableOpacity>
+         </View>
+       </View>
+       <View style={[styles.infoContainer, styles.custom1]}>
+         <View style={[styles.fistRow, styles.padding15TopBotton]}>
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={styles.tdText}>Name</Text>
+           </View>
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={[styles.tableBody]}>{entry[1]['firstName']}</Text>
+           </View>
+         </View>
+
+         <View style={[styles.fistRow, styles.padding15TopBotton]}>
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={styles.tdText}>Address</Text>
+           </View>
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={[styles.tableBody]}>
+             {entry[1]['additionalAddress']}
+          
+             </Text>
+           </View>
+         </View>
+
+         <View
+           style={[
+             styles.fistRow,
+             styles.padding15TopBotton,
+             styles.marginTopX,
+           ]}
+         >
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={styles.tdText}>Mobile Number</Text>
+           </View>
+           <View style={[styles.specificationView, styles.stylesTd]}>
+             <Text style={[styles.tableBody]}>
+             {entry[1]['phoneCode']+entry[1]['mobileNumber']}
+             
+               <Ionicons
+                 name="check-circle"
+                 size={20}
+                 style={styles.circleIconCheck}
+               ></Ionicons>
+             </Text>
+           </View>
+         </View>
+       </View>
+     </TouchableOpacity>)
+       }
+       return <View><Text>Nothing found</Text></View>;
+     }  
+     return <View><Text>Fetching</Text></View>;
+
+  }, [shippingAddresses, isFetching, defaultAddress])
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
     <View>
-      {isFetching ? <ActivityIndicator></ActivityIndicator> : <Fragment>
-        {shippingAddresses !== null && Object.keys(shippingAddresses).length > 0 ?<Fragment>
-          {shippingAddresses.map((item, index) =>    <TouchableOpacity key = {index}style={styles.blockTouch}>
-        <View style={[styles.fistRow]}>
-          <View style={[styles.specificationView, styles.custom0]}>
-            <Ionicons name="map-marker" size={20} />
-        <Text> Work</Text>
-          </View>
-          <View style={[styles.specificationView, styles.custom0]}>
-            <TouchableOpacity style={[styles.specificationView]}>
-              <Ionicons name="edit" size={20} />
-              <Text> Edit </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.specificationView]} c>
-              <Ionicons name="trash" size={20} />
-              <Text> Delete</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={[styles.infoContainer, styles.custom1]}>
-          <View style={[styles.fistRow, styles.padding15TopBotton]}>
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={styles.tdText}>Name</Text>
-            </View>
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={[styles.tableBody]}>Bharat Shah</Text>
-            </View>
-          </View>
-
-          <View style={[styles.fistRow, styles.padding15TopBotton]}>
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={styles.tdText}>Address</Text>
-            </View>
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={[styles.tableBody]}>
-                28 Office H, Interco DMCC, AU Tower - JLT, Dubai, United Arab
-                Emirates
-              </Text>
-            </View>
-          </View>
-
-          <View
-            style={[
-              styles.fistRow,
-              styles.padding15TopBotton,
-              styles.marginTopX,
-            ]}
-          >
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={styles.tdText}>Mobile Number</Text>
-            </View>
-            <View style={[styles.specificationView, styles.stylesTd]}>
-              <Text style={[styles.tableBody]}>
-                +971-56-5973854{" "}
-                <Ionicons
-                  name="check-circle"
-                  size={20}
-                  style={styles.circleIconCheck}
-                ></Ionicons>
-              </Text>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity>
-)}
-       
-
-</Fragment>:<Fragment><View><Text>No Shipping address provided.</Text></View></Fragment>}
-        
-     
-     
-      </Fragment>}
+     {getShippingInCompoennt}
       
      
       
@@ -205,6 +221,10 @@ function App(props) {
 }
 
 const styles = StyleSheet.create({
+  selectedAddress:{
+    borderWidth:2,
+    borderColor:'green'
+  },
   container: {
     flex: 1,
    
@@ -392,7 +412,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     marginRight: 1,
-    marginTop: 15,
+    marginTop: 5,
     flexWrap: "wrap",
     height: "auto",
   },
