@@ -3,6 +3,8 @@ export const SIGNUP = "SIGNUP";
 export const LOGOUT = "LOGOUT";
 export const AUTHENTICATE = "AUTHENTICATE";
 export const CREATE_SHIPPING = "CREATE_SHIPPING";
+export const UPDATE_SHIPPING = "UPDATE_SHIPPING";
+export const DELETE_SHIPPING = "DELETE_SHIPPING";
 
 export const authenticate = (userId, token, expiryTime) => {
   return (dispatch) => {
@@ -43,6 +45,67 @@ export const create_shipping = (data) => {
     payload: data
   })
  }
+}
+
+export const updateShipping = (data, shippingId) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+   const userId = getState().auth.userId;
+    
+   try{
+    const response = await fetch(`https://mobileshop-458de.firebaseio.com/shipping/${userId}/${shippingId}.json?auth=${token}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({...data})
+    });
+
+    if(!response.ok) {
+      throw new Error('Something went wrong!')
+    }
+
+    dispatch({
+      type: UPDATE_SHIPPING,
+      payload: data
+    })
+  
+   } catch (error) {
+     console.log(error)
+   }
+   
+ 
+  
+  }
+
+
+}
+
+export const deleteShipping = (shippingID) => {
+  return async(dispatch, getState) => {
+    const token = getState().auth.token;
+    try{
+      const response = await fetch(`https://mobileshop-458de.firebaseio.com/shipping/${userId}/${shippingId}.json?auth=${token}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({...data})
+      });
+  
+      if(!response.ok) {
+        throw new Error('Something went wrong!')
+      }
+  
+      dispatch({
+        type: DELETE_SHIPPING,
+        payload: shippingID
+      })
+    
+     } catch (error) {
+       console.log(error)
+     }
+  }
 }
 
 export const signup = (firstName, lastName, email, password) => {
@@ -177,6 +240,7 @@ const clearLogoutTimer = () => {
     clearTimeout(timer);
   }
 };
+
 const setLogoutTimer = (expirationTime) => {
   return (dispatch) => {
     timer = setTimeout(() => {

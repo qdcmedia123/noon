@@ -68,49 +68,43 @@ function App(props) {
   // Check if the edit mode is one 
   const shippingAddressId = props.navigation.getParam("shippingAddressId");
   const isEditMode = props.navigation.getParam("editMode");
+  let EditShippingDetails = false;
 
+  if(typeof shippingAddressId !== 'undefined' && typeof isEditMode !== 'undefined' && isEditMode === true) {
+   
+    EditShippingDetails = props.navigation.getParam("shippingDeatils");
+    EditShippingDetails.location = typeof getLocation === 'undefined' ? EditShippingDetails.location  : getLocation;
+    console.log(EditShippingDetails)
+  }
  
   useEffect(() => {
     if(error) {
       Alert.alert('An Error Occurred!', error, [{text: 'Okay'}]);
     }
-    setFromDataFromEditShipping();
-  }, [error, setFromDataFromEditShipping])
+  }, [error])
 
 
   
   const [formState, dispatchFormState] = useReducer(formReducer, {
     inputValues: {
-      additionalAddress:'',
-      phoneCode:countryCodePhone,
-      mobileNumber: '',
-      firstName: '',
-      lastName:'',
-      addressLabel:'home'
+      additionalAddress:EditShippingDetails ? EditShippingDetails.additionalAddress : '',
+      phoneCode:EditShippingDetails ? EditShippingDetails.countryCodePhone : '',
+      mobileNumber: EditShippingDetails ? EditShippingDetails.mobileNumber : '',
+      firstName: EditShippingDetails ? EditShippingDetails.firstName : '',
+      lastName:EditShippingDetails ? EditShippingDetails.lastName : '',
+      addressLabel:EditShippingDetails ? EditShippingDetails.addressLabel : 'home',
     },
     inputValidities: {
-      additionalAddress:false,
-      phoneCode:true,
-      mobileNumber: false,
-      firstName: false,
-      lastName:false,
+      additionalAddress: EditShippingDetails ? true : false,
+      phoneCode: true,
+      mobileNumber: EditShippingDetails ? true : false,
+      firstName: EditShippingDetails ? true : false,
+      lastName:EditShippingDetails ? true : false,
       addressLabel:true
     },
-    formIsValid: false
+    formIsValid: EditShippingDetails ? true : false
   });
 
-
-
-  const setFromDataFromEditShipping = useCallback(() => {
-    if(typeof shippingAddressId !== 'undefined' && typeof isEditMode !== 'undefined' && isEditMode === true) {
-      let ShippingDetails = props.navigation.getParam("shippingDeatils");
-      let { additionalAddress, phoneCode, mobileNumber, firstName, lastName,addressLabel} = ShippingDetails;
-      dispatchFormState({type: FORM_INPUT_UPDATE, value:additionalAddress, isValid:true, input: 'additionalAddress'});
-      
-      console.log('in edit mode')
-      console.log(ShippingDetails);
-    }
-  }, [shippingAddressId, isEditMode, dispatchFormState, formState])
 
   const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
      dispatchFormState({
@@ -129,7 +123,7 @@ function App(props) {
    }, [formState]);
    
   const saveAddress = async() => {
-    console.log(formState)
+    
     if (formState.formIsValid === true) {
       // Submit your form to the server 
       // After sucessful the data is added 
@@ -139,9 +133,19 @@ function App(props) {
       // Get the user id 
       const {email, user_id} = jwt_decode(auth.token);
       formState.inputValues.location = getLocation;
-      const saveShipping = authActions.create_shipping(formState.inputValues);
+     
       try{
-        await dispatch(saveShipping);
+        if(EditShippingDetails) {
+          // Dispatch edit action with the id
+          const dispatchEdit = authActions.updateShipping(formState.inputValues, shippingAddressId);
+          // dispatch now 
+          await dispatch(dispatchEdit);
+        } else {
+          // Create the shipping  
+          const saveShipping = authActions.create_shipping(formState.inputValues);
+          await dispatch(saveShipping);
+        }
+        
         props.navigation.navigate('ShippingDetails');
       } catch (err) {
         console.log(err);
@@ -184,7 +188,7 @@ function App(props) {
             style={{  }}
           />
 
-          <TouchableOpacity style={styles.cancelBtn}>
+          <TouchableOpacity style={styles.cancelBtn} onPress = {() => props.navigation.navigate('ShippingDetails')}>
             <Text style={styles.cancelBtnTxt}>CANCEL</Text>
           </TouchableOpacity>
         </View>
@@ -215,7 +219,7 @@ function App(props) {
           </View>
 
           <View style={[styles.col_md_6, styles.googleImageScreen]}>
-          <MapPreview onPress={pickOnMapHandler} style = {styles.mapPreview} location={getLocation}>
+          <MapPreview onPress={pickOnMapHandler} style = {styles.mapPreview} location={EditShippingDetails ? EditShippingDetails.location : getLocation}>
           </MapPreview>
           </View>
 
@@ -233,6 +237,7 @@ function App(props) {
               errorText="Please enter your additional address."
               onInputChange={inputChangeHandler}
               initialValue={formState.inputValues.additionalAddress || ''}
+              initiallyValid={!!EditShippingDetails}
               onBlur={lostFocusHandler}
             />
           </View>
@@ -248,7 +253,7 @@ function App(props) {
           </View>
 
           <View style={[styles.col_md_3]}>
-            <Text style={[styles.countryCode]}>{countryCodePhone}</Text>
+            <Text style={[styles.countryCode]}>{formState.inputValues.countryCodePhone || countryCodePhone}</Text>
           </View>
 
           
@@ -262,7 +267,8 @@ function App(props) {
               autoCapitalize="none"
               errorText="Please enter you mobile number"
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={formState.inputValues.mobileNumber || ''}
+              initiallyValid={!!EditShippingDetails}
               onBlur={lostFocusHandler}
             />
           </View>
@@ -278,7 +284,8 @@ function App(props) {
               autoCapitalize="none"
               errorText="Please enter your first name."
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={formState.inputValues.firstName || ''}
+              initiallyValid={!!EditShippingDetails}
               onBlur={lostFocusHandler}
             />
           </View>
@@ -294,7 +301,8 @@ function App(props) {
               autoCapitalize="none"
               errorText="Please enter your last name."
               onInputChange={inputChangeHandler}
-              initialValue=""
+              initialValue={formState.inputValues.lastName || ''}
+              initiallyValid={!!EditShippingDetails}
               onBlur={lostFocusHandler}
             />
           </View>
