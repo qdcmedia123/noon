@@ -14,12 +14,17 @@ import {
 import Ionicons from "react-native-vector-icons/FontAwesome5";
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import * as authActions from '../../store/actions/auth';
+
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
+// check something here you want to referesh
+// https://stackoverflow.com/questions/44223727/react-navigation-goback-and-update-parent-state
 function App(props) {
+  const dispatch = useDispatch();
   const [isFetching, setIsFetching] = useState(false);
   const { token, userId } = useSelector((state) => state.auth);
   const [shippingAddresses, setShippingAddresses] = useState(null);
@@ -135,7 +140,7 @@ function App(props) {
              <Ionicons name="edit" size={20} />
              <Text> Edit </Text>
            </TouchableOpacity>
-           <TouchableOpacity style={[styles.specificationView]} c>
+           <TouchableOpacity style={[styles.specificationView]} onPress = {() => deleteShippingById(entry[0])}>
              <Ionicons name="trash" size={20} />
              <Text> Delete</Text>
            </TouchableOpacity>
@@ -194,6 +199,33 @@ function App(props) {
 
   }, [shippingAddresses, isFetching, defaultAddress])
 
+  
+  // Delete the shipping 
+  const deletePressed = async(id) => {
+    try{
+      let deleteShippingById =  authActions.deleteShipping(id);
+      dispatch(await deleteShippingById);
+      props.navigation.push('ShippingDetails');
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  const deleteShippingById = (id) => {
+    Alert.alert(
+      "Alert Title",
+      "My Alert Msg",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => {deletePressed(id)} }
+      ],
+      { cancelable: false }
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>

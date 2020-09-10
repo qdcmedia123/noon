@@ -3,7 +3,9 @@ import {
   LOGOUT,
   CREATE_SHIPPING,
   UPDATE_SHIPPING,
-  DELETE_SHIPPING
+  DELETE_SHIPPING,
+  DEFAULT_SHIPPING
+  ,SET_DEFAULT_SHIPPING
 } from "../actions/auth";
 
 const initialState = {
@@ -33,8 +35,22 @@ export default (state = initialState, action) => {
             shippingAddressDeleted: action.payload
         }
     };
+    
+    case DEFAULT_SHIPPING:
+      return {
+        ...state,
+        defaultShippingId: action.payload
+      }
+    
+    case SET_DEFAULT_SHIPPING:
+      return {
+        ...state,
+        setShipping: action.payload
+      }
+
     case LOGOUT:
       return initialState;
+      
     default:
       return state;
   }

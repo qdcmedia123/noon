@@ -146,7 +146,7 @@ function App(props) {
           await dispatch(saveShipping);
         }
         
-        props.navigation.navigate('ShippingDetails');
+        props.navigation.push('ShippingDetails');
       } catch (err) {
         console.log(err);
       }
@@ -172,6 +172,16 @@ function App(props) {
   const pickOnMapHandler = () => {
     props.navigation.navigate('Map');
 }
+
+ const setShippingAsDefault = async(id) => {
+    try {
+      let defaultShipping = authActions.setOrUpdateDefaultShipping(id);
+      dispatch(defaultShipping);
+
+    } catch (error) {
+      console.log(error);
+    }
+ }
 
   return (
    <ScrollView>
@@ -202,7 +212,7 @@ function App(props) {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.cancelBtn}>
+          <TouchableOpacity style={styles.cancelBtn} onPress = {() => { setShippingAsDefault(shippingAddressId)}}>
             <Text 
               style={styles.setAsDefault}>Set as a default</Text>
           </TouchableOpacity>
