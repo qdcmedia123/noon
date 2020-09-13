@@ -113,16 +113,12 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
   return async (dispatch, getState) => {
     let token = getState().auth.token;
     let userId = getState().auth.userId;
-    // If the     
-    //{userID: shippingID}
     const data = {};
     data[userId] = shippingID;
-
-    // fetch the data if default shipping is already exists 
-
-    /*
+    console.log(`userID: #${userId}`)
+    
     try{
-      let response = await fetch(`https://mobileshop-458de.firebaseio.com/defaultShippings/${userId}.json?auth=${token}`);
+      let response = await fetch(`https://mobileshop-458de.firebaseio.com/shippings/${userId}.json/?auth=${token}`);
       
       if(!response.ok) {
         throw new Error("Could fetch the default shipping address.");
@@ -135,9 +131,8 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
       console.log(error)
     }
     
-    */
-    
-    
+  
+
     try {
       const response = await fetch(
         `https://mobileshop-458de.firebaseio.com/defaultShippings/${userId}.json?auth=${token}`,
@@ -151,26 +146,20 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
           }),
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Could not save default shipping address.");
       }
-  
+
       dispatch({
         type: SET_DEFAULT_SHIPPING,
         payload: data,
       });
-  
     } catch (error) {
       console.log(error);
     }
-    
-    
-   
-
-  }
-}
-
+  };
+};
 
 export const signup = (firstName, lastName, email, password) => {
   return async (dispatch) => {
@@ -190,7 +179,7 @@ export const signup = (firstName, lastName, email, password) => {
         }),
       }
     );
-  
+
     if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData.error.message;
@@ -221,7 +210,7 @@ export const signup = (firstName, lastName, email, password) => {
           lastName,
           email,
           password,
-          defaultShipping:''
+          defaultShipping: "",
         }),
       }
     );
@@ -230,7 +219,6 @@ export const signup = (firstName, lastName, email, password) => {
       let errorResData = await saveUser.json();
       let errorId = errorResData.error.message;
       let message = `Something went wrong! with secound operation ${errorId}`;
-      console.log(saveUser);
       throw new Error(message);
     }
 
