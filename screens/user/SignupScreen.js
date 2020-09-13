@@ -102,14 +102,15 @@ const AuthScreen = (props, navigation) => {
   );
 
   const register = async() => {
-    
+  
     console.log(formState);
     let action;
     action = authActions.signup(
       formState.inputValues.firstName,
       formState.inputValues.lastName,
       formState.inputValues.email,
-      formState.inputValues.password
+      formState.inputValues.password,
+    
     )
     setError(null);
     setIsLoading(true);

@@ -118,6 +118,26 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
     const data = {};
     data[userId] = shippingID;
 
+    // fetch the data if default shipping is already exists 
+
+    /*
+    try{
+      let response = await fetch(`https://mobileshop-458de.firebaseio.com/defaultShippings/${userId}.json?auth=${token}`);
+      
+      if(!response.ok) {
+        throw new Error("Could fetch the default shipping address.");
+      }
+
+      let jsonReponse = await response.json();
+      console.log(jsonReponse);
+      console.log('default shipping')
+    } catch (error) {
+      console.log(error)
+    }
+    
+    */
+    
+    
     try {
       const response = await fetch(
         `https://mobileshop-458de.firebaseio.com/defaultShippings/${userId}.json?auth=${token}`,
@@ -144,6 +164,8 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
     } catch (error) {
       console.log(error);
     }
+    
+    
    
 
   }
@@ -168,7 +190,7 @@ export const signup = (firstName, lastName, email, password) => {
         }),
       }
     );
-    console.log(response);
+  
     if (!response.ok) {
       const errorResData = await response.json();
       const errorId = errorResData.error.message;
@@ -199,6 +221,7 @@ export const signup = (firstName, lastName, email, password) => {
           lastName,
           email,
           password,
+          defaultShipping:''
         }),
       }
     );
