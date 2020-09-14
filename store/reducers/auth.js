@@ -27,6 +27,7 @@ export default (state = initialState, action) => {
       };
     case CREATE_SHIPPING:
       return {
+        ...state,
         shippingAddress: action.payload,
       };
     case DELETE_SHIPPING: {

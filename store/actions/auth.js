@@ -118,46 +118,55 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
     console.log(`userID: #${userId}`)
     
     try{
-      let response = await fetch(`https://mobileshop-458de.firebaseio.com/shippings/${userId}.json/?auth=${token}`);
+      let response = await fetch(`https://mobileshop-458de.firebaseio.com/users/${userId}.json?auth=${token}`);
       
       if(!response.ok) {
         throw new Error("Could fetch the default shipping address.");
       }
 
       let jsonReponse = await response.json();
-      console.log(jsonReponse);
-      console.log('default shipping')
+    
+      // update the shipping key
+      //updated data 
+      let updateData = {};
+
+      Object.entries(jsonReponse).forEach(entry => {
+          entry[1]['defaultShipping'] = shippingID;
+          updateData = entry[1];
+      })
+
+      try {
+        const response = await fetch(
+          `https://mobileshop-458de.firebaseio.com/users/${userId}.json?auth=${token}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...updateData,
+            }),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error("Could not save default shipping address.");
+        }
+  
+        dispatch({
+          type: UPDATE_SHIPPING,
+          payload: updateData,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+
+
     } catch (error) {
       console.log(error)
     }
-    
   
 
-    try {
-      const response = await fetch(
-        `https://mobileshop-458de.firebaseio.com/defaultShippings/${userId}.json?auth=${token}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...data,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Could not save default shipping address.");
-      }
-
-      dispatch({
-        type: SET_DEFAULT_SHIPPING,
-        payload: data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
   };
 };
 
@@ -195,11 +204,17 @@ export const signup = (firstName, lastName, email, password) => {
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
 
+    // Get the idToken 
+    const {localId} = resData;
+
+ 
+   
+
     // Save data to ano ther modle as well
     // Url to post https://mobileshop-458de.firebaseio.com/users.json
     // Another request ends here
     const saveUser = await fetch(
-      `https://mobileshop-458de.firebaseio.com/users.json?auth=${resData.idToken}`,
+      `https://mobileshop-458de.firebaseio.com/users/${localId}.json?auth=${resData.idToken}`,
       {
         method: "POST",
         headers: {
