@@ -19,8 +19,10 @@ import ProductDetailsScreen from '../screens/shop/ProductDetailScreen';
 import AuthScreen from '../screens/user/AuthScreen';
 import SignupScreen from '../screens/user/SignupScreen';
 import ShippingDetailsScreen from '../screens/user/ShippingDetailsScreen';
+import ShippingDetailsScreenSelect from '../screens/user/ShippingDetailsScreenSelect';
 import EditShippingDetails from '../screens/user/EditShippingDetails';
 import MapScreen from '../screens/user/MapScreen';
+import PaymentScreen from '../screens/shop/PaymaentScreen';
 
 // Use reducer 
 
@@ -28,6 +30,7 @@ import MapScreen from '../screens/user/MapScreen';
 
 
 const defaultStackNavOptions = {
+  
     headerTitleAlign: 'center',
     headerTitleStyle: { alignSelf: 'center' },
     headerTitle: () => <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
@@ -56,7 +59,8 @@ const defaultStackNavOptions = {
     
     {
       // initialRouteName: 'Categories',
-      defaultNavigationOptions: defaultStackNavOptions
+      defaultNavigationOptions: defaultStackNavOptions,
+      
     }
   );
 
@@ -86,9 +90,14 @@ const MessagesNavigator = createStackNavigator(
 
 const CartNavigator = createStackNavigator(
     {
-      Cart: {
-          screen: CartScreen
-      }
+      Cart: CartScreen,
+      ShippingDetailsScreenSelect: {
+        screen:ShippingDetailsScreenSelect,
+        navigationOptions:{
+          tabBarVisible: false
+        }
+      },
+      PaymentScreen:PaymentScreen
     },
     {
       // initialRouteName: 'Categories',

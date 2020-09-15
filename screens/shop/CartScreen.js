@@ -314,7 +314,7 @@ const orderNow = useCallback(() => {
       
     </ScrollView>
       <View style={[styles.specificationView, styles.cartAndQty]}>
-        <Button danger style={styles.orderNowButton} onPress = { () => orderNow()}>
+        <Button danger style={styles.orderNowButton} onPress = { () => props.navigation.push('ShippingDetailsScreenSelect', {fromCartScreen: true})}>
             <Text   adjustsFontSizeToFit style={styles.buyText}>BUY {cartTotal()} ITEMS FOR AED {
                    moneyFormate(cart.totalAmount + (cart.totalAmount < 100 ? 10 : 0)) 
             }</Text>

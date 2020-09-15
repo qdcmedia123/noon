@@ -5,7 +5,8 @@ import {
   UPDATE_SHIPPING,
   DELETE_SHIPPING,
   DEFAULT_SHIPPING
-  ,SET_DEFAULT_SHIPPING
+  ,SET_DEFAULT_SHIPPING,
+  SHIPPING_ADDRESS
 } from "../actions/auth";
 
 const initialState = {
@@ -22,6 +23,7 @@ export default (state = initialState, action) => {
       };
     case AUTHENTICATE:
       return {
+        ...state,
         token: action.token,
         userId: action.userId,
       };
@@ -47,6 +49,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         setShipping: action.payload
+      }
+    case SHIPPING_ADDRESS:
+      return {
+        ...state,
+        shipping_addresses:action.payload
       }
 
     case LOGOUT:

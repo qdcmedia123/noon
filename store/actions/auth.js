@@ -6,6 +6,7 @@ export const CREATE_SHIPPING = "CREATE_SHIPPING";
 export const UPDATE_SHIPPING = "UPDATE_SHIPPING";
 export const DELETE_SHIPPING = "DELETE_SHIPPING";
 export const SET_DEFAULT_SHIPPING = "DEFAULT_SHIPPING";
+export const SHIPPING_ADDRESS = "SHIPPING_ADDRESS";
 
 export const authenticate = (userId, token, expiryTime) => {
   return (dispatch) => {
@@ -115,25 +116,27 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
     let userId = getState().auth.userId;
     const data = {};
     data[userId] = shippingID;
-    console.log(`userID: #${userId}`)
-    
-    try{
-      let response = await fetch(`https://mobileshop-458de.firebaseio.com/users/${userId}.json?auth=${token}`);
-      
-      if(!response.ok) {
+    console.log(`userID: #${userId}`);
+
+    try {
+      let response = await fetch(
+        `https://mobileshop-458de.firebaseio.com/users/${userId}.json?auth=${token}`
+      );
+
+      if (!response.ok) {
         throw new Error("Could fetch the default shipping address.");
       }
 
       let jsonReponse = await response.json();
-    
+
       // update the shipping key
-      //updated data 
+      //updated data
       let updateData = {};
 
-      Object.entries(jsonReponse).forEach(entry => {
-          entry[1]['defaultShipping'] = shippingID;
-          updateData = entry[1];
-      })
+      Object.entries(jsonReponse).forEach((entry) => {
+        entry[1]["defaultShipping"] = shippingID;
+        updateData = entry[1];
+      });
 
       try {
         const response = await fetch(
@@ -148,11 +151,11 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
             }),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Could not save default shipping address.");
         }
-  
+
         dispatch({
           type: UPDATE_SHIPPING,
           payload: updateData,
@@ -160,13 +163,9 @@ export const setOrUpdateDefaultShipping = (shippingID) => {
       } catch (error) {
         console.log(error);
       }
-
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  
-
   };
 };
 
@@ -204,11 +203,8 @@ export const signup = (firstName, lastName, email, password) => {
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
 
-    // Get the idToken 
-    const {localId} = resData;
-
- 
-   
+    // Get the idToken
+    const { localId } = resData;
 
     // Save data to ano ther modle as well
     // Url to post https://mobileshop-458de.firebaseio.com/users.json
@@ -250,7 +246,6 @@ export const signup = (firstName, lastName, email, password) => {
 
 export const login = (email, password) => {
   return async (dispatch) => {
-    //https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBeeIWtGxW70vMoeHAauOXTDmMcNEfABsI
     const response = await fetch(
       "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBeeIWtGxW70vMoeHAauOXTDmMcNEfABsI",
       {
@@ -279,7 +274,23 @@ export const login = (email, password) => {
     }
 
     const resData = await response.json();
-    console.log(resData);
+    var resDataShippings = "";
+
+    try {
+      const responseShippings = await fetch(
+        `https://mobileshop-458de.firebaseio.com/shipping/${resData.localId}.json`
+      );
+      if (!responseShippings.ok) {
+        throw new Error("Could not fetch shipping details");
+      }
+
+      resDataShippings = await responseShippings.json();
+
+      dispatch({ type: SHIPPING_ADDRESS, payload: resDataShippings });
+    } catch (error) {
+      throw new Error(error);
+    }
+
     dispatch(
       authenticate(
         resData.localId,
@@ -287,9 +298,11 @@ export const login = (email, password) => {
         parseInt(resData.expiresIn) * 1000
       )
     );
+
     const expireationData = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
+
     saveDataToStorage(resData.idToken, resData.localId, expireationData);
   };
 };
