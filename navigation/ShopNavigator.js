@@ -25,7 +25,17 @@ import MapScreen from '../screens/user/MapScreen';
 import PaymentScreen from '../screens/shop/PaymaentScreen';
 
 // Use reducer 
+/*
 
+https://github.com/react-navigation/react-navigation/issues/3980
+
+Search the string 
+"ZackTRobertson commented on 11 May 2018"
+
+https://stackoverflow.com/questions/54638872/how-can-i-hide-the-bottom-tab-bar-on-a-specific-screen-react-navigation-3-x
+https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation
+https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation
+*/
 
 
 
