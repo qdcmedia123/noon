@@ -1,25 +1,88 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  lamdt:{
-    flex:10
+  defaultBlue:{
+    color:'#3866de'
   },
-  switchContainer:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
+  opacityHealf:{
+    opacity:0.5
   },
-  leaveAtMyDoor:{
-    flex:1,
-    flexDirection:'row'
+  ccIconColor:{
+    color:'#909dad'
   },
-  dpr:{
-    flex:1,
-    flexDirection:'column',
-    alignItems:'flex-end'
+  defaultTextColor:{
+    color:'#424854'
   },
-  rightAlign:{
-    alignSelf:'center'
+  paymentMethodText:{
+    marginTop:15,
+    fontSize:15
+  },
+  verifiedIcon:{
+    textAlignVertical:'center'
+  },
+  green:{
+    color:'#38ad06'
+  },
+  paddingVertical:{
+    paddingVertical:5
+  },
+  paddingHorizontal:{
+    paddingHorizontal:10
+  },
+  grayText:{
+    color:'#7f8497'
+  },
+  blueText:{
+    color:'#5d78bf'
+  },
+  defaultPadding:{
+    paddingVertical:5,
+    paddingHorizontal:10
+  },
+  Poppins_Regular: {
+    fontFamily:'Poppins-Regular'
+  },
+  Poppins_Light: {
+    fontFamily:'Poppins-Light'
+  },
+  Poppins_Medium: {
+    fontFamily:'Poppins-Medium'
+  },
+  Poppins_SemiBold: {
+    fontFamily:'Poppins-SemiBold'
+  },
+  Poppins_Bold: {
+    fontFamily:'Poppins-Bold'
+  },
+  addSomething: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-around",
+  },
+  gulfForFoo2: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  lamdt: {
+    flex: 10,
+  },
+  switchContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  leaveAtMyDoor: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  dpr: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "flex-end",
+  },
+  rightAlign: {
+    alignSelf: "center",
   },
   label: {
     margin: 8,
@@ -27,26 +90,25 @@ export const styles = StyleSheet.create({
   checkbox: {
     alignSelf: "center",
   },
-  
-  paymentOptions:{
-    flex:1,
-    flexDirection:'row',
-    borderBottomColor:'#ecedf2',
-    borderBottomWidth:1
+
+  paymentOptions: {
+    flex: 1,
+    flexDirection: "row",
+    borderBottomColor: "#ecedf2",
+    borderBottomWidth: 1,
   },
-  
+
   whiteBG: {
     backgroundColor: "#ffffff",
   },
   firstRow: {
-    
     flex: 1,
     flexDirection: "row",
   },
   container: {
     flex: 1,
     flexDirection: "column",
-    justifyContent:'space-between'
+    justifyContent: "space-between",
   },
   row: {},
   flex1: {
@@ -57,7 +119,7 @@ export const styles = StyleSheet.create({
   },
   textRight: {
     textAlign: "right",
-    flex:1
+    flex: 1,
   },
   box: {
     height: "auto",
@@ -195,5 +257,4 @@ export const styles = StyleSheet.create({
   specificationView: {
     flexDirection: "row",
   },
- 
 });
