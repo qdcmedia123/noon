@@ -1,6 +1,12 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  font1:{
+    fontSize:12
+  },
+  blueIcon:{
+    color:'#738ccc'
+  },
   defaultBlue:{
     color:'#3866de'
   },
@@ -111,6 +117,10 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   row: {},
+  flexCenterItem:{
+    flex:1,
+    alignItems:'flex-start'
+  },
   flex1: {
     flex: 1,
   },

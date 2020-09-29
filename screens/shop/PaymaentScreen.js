@@ -89,7 +89,7 @@ const App = () => {
             <View>
             <Text style = {[styles.Poppins_Bold, styles.paymentMethodText, styles.defaultPadding, styles.bgWhilte]}>Delivery Options</Text>
             </View>
-            <View style={styles.leaveAtMyDoor}>
+            <View style={[styles.bgWhilte, styles.leaveAtMyDoor]}>
               <View style={styles.switchContainer}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -111,14 +111,14 @@ const App = () => {
             <View style={styles.gulfForfood}>
               <Text style = {[styles.paddingVertical, styles.Poppins_Bold, styles.grayText]}>Gulf for Food</Text>
 
-              <View style={styles.gulfForFoo2}>
-                <View style={styles.flex1}>
+              <View style={[styles.paddingVertical, styles.gulfForFoo2]}>
+                <View style={[styles.flexCenterItem, styles.flex1]}>
                   <Ionicons name="home" size={30} />
                 </View>
                 <View style={[styles.flex1, styles.addSomething]}>
-                  <Ionicons name="home"></Ionicons>
-                  <Text>AED 0</Text>
-                  <Ionicons name="home"></Ionicons>
+                  <TouchableOpacity><Ionicons name="plus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
+                  <Text style = {[styles.Poppins_Bold, styles.grayText]}>AED 0</Text>
+                  <TouchableOpacity><Ionicons name="minus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -129,8 +129,11 @@ const App = () => {
                 Lorem Ipsum has been the industry's standard dummy text ever
               
               </Text>
+              <Text style = {[styles.grayText,styles.Poppins_Regular, styles.font1]}>None Refuntable something wil be added to your cart</Text>
             </View>
+          
           </View>
+          
           <View style={[styles.row, styles.box, styles.flex1]}></View>
           <View style={[styles.row, styles.box, styles.flex1]}></View>
         </View>
