@@ -1,0 +1,18 @@
+1. In the payment screnn you need to give to options COD and Stripe payment
+2. If COD then simply add the 10 dhs to all the order and the model will be like this 
+	-> Payment
+			.userId
+			.method
+			.Amount 
+	-> COD
+			.UserID
+			.orderID
+			.Amount
+	-> Stripe
+			.UserID
+			.OrderID
+			.Amount
+	-> Order
+		->OrderID
+			.UserID
+			
