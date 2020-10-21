@@ -332,9 +332,12 @@ const ProductDetailScreen = (props) => {
           </Form>
             </View>
             <View style={styles.addToCartContainer}>
+              
+              
               <Button onPress = {() => { 
                 dispatch(cartActions.addToCart(selectedProduct))
               }}info><Text style={styles.addToCartContainer}> Add To Cart </Text></Button>
+              
             </View>
         </View>
       

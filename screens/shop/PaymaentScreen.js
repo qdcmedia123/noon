@@ -21,10 +21,29 @@ import {
 } from "react-native";
 
 import Ionicons from "react-native-vector-icons/FontAwesome5";
-
+import * as cartActions from "../../store/actions/cart";
 import { styles } from "../../assets/css/styles";
 
 const App = () => {
+  // Component states 
+  const [componentState, setComponentStates] = useState({
+    paymentWithCard:false,
+    paymentWithCash:false,
+    leadAtMyDoor: false
+  });
+
+  const [gulfForFood, setGulfForFood] = useState(0);
+
+  const setGulf = useCallback(() => {
+    setGulfForFood(gulfForFood => gulfForFood + 10 * 2);
+  }, [gulfForFood])
+
+  const setGulfDecrement = useCallback(() => {
+    if(gulfForFood < 1) return false;
+
+    setGulfForFood(gulfForFood => gulfForFood - (10 * 2));
+  }, [gulfForFood])
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -55,7 +74,7 @@ const App = () => {
               </View>
               <View style={[styles.container, styles.bgWhilte]}>
                 <View style={[styles.paymentOptions]}>
-                  <CheckBox value={true} style={styles.checkbox} />
+                  <CheckBox value={componentState.paymentWithCard} style={styles.checkbox} onValueChange = {() => setComponentStates({...componentState, paymentWithCard: !componentState.paymentWithCard, paymentWithCash:false})}/>
 
                   <Text style={[styles.Poppins_Bold, styles.label, styles.defaultTextColor]}>Pay With Card?</Text>
 
@@ -64,13 +83,15 @@ const App = () => {
                   </View>
                 </View>
                 <View>
-                  <Text style = {styles.Poppins_Regular}> Here Will be card form</Text>
+                  {/*<Text style = {styles.Poppins_Regular}> Here Will be card form</Text>
+                  */}
+                  
                 </View>
               </View>
 
               <View style={[styles.container, styles.bgWhilte]}>
                 <View style={[styles.paymentOptions]}>
-                  <CheckBox value={true} style={[styles.checkbox]} />
+                  <CheckBox value={componentState.paymentWithCash} style={[styles.checkbox]} onValueChange = {() => setComponentStates({...componentState, paymentWithCash: !componentState.paymentWithCash, paymentWithCard:false})}/>
 
                   <Text  style={[styles.Poppins_Bold, styles.label, styles.defaultTextColor]}>Pay With Cash</Text>
 
@@ -79,7 +100,9 @@ const App = () => {
                   </View>
                 </View>
                 <View>
-                  <Text> Here Will be card form</Text>
+                  {/*<Text> Here Will be card form</Text>
+                  */}
+                  
                 </View>
               </View>
             </View>
@@ -95,12 +118,13 @@ const App = () => {
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={true ? "#3866de" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
-                  value={true}
+                  value={componentState.leadAtMyDoor}
+                  onValueChange={() => setComponentStates({...componentState, leadAtMyDoor: !componentState.leadAtMyDoor})}
                 />
               </View>
               <View style={[styles.lamdt, styles.defaultPadding]}>
-                <Text style = {[styles.Poppins_Bold, styles.opacityHealf]}>Lead At My Door</Text>
-                <Text style = {[styles.Poppins_Regular, styles.opacityHealf]}>
+                <Text style = {[styles.Poppins_Bold, componentState.leadAtMyDoor !== true ? styles.opacityHealf : '']}>Lead At My Door</Text>
+                <Text style = {[styles.Poppins_Regular, componentState.leadAtMyDoor !== true ? styles.opacityHealf : '']}>
                   Component that wraps platform ScrollView while providing
                   integration with touch locking "responder" system.
                 </Text>
@@ -116,9 +140,9 @@ const App = () => {
                   <Ionicons name="home" size={30} />
                 </View>
                 <View style={[styles.flex1, styles.addSomething]}>
-                  <TouchableOpacity><Ionicons name="plus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
-                  <Text style = {[styles.Poppins_Bold, styles.grayText]}>AED 0</Text>
-                  <TouchableOpacity><Ionicons name="minus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
+                  <TouchableOpacity onPress = {() => setGulf()}><Ionicons name="plus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
+  <Text style = {[styles.Poppins_Bold, styles.grayText]}>AED {gulfForFood}</Text>
+                  <TouchableOpacity onPress = {() => setGulfDecrement()}><Ionicons name="minus-square" size = {30} style = {styles.blueIcon}></Ionicons></TouchableOpacity>
                 </View>
               </View>
             </View>

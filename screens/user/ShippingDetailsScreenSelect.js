@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, Fragment, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+  useMemo,
+} from "react";
 import {
   Alert,
   Text,
@@ -9,14 +15,14 @@ import {
   Dimensions,
   ActivityIndicator,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/FontAwesome5";
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
 import { useSelector, useDispatch } from "react-redux";
-import * as authActions from '../../store/actions/auth';
-
+import * as authActions from "../../store/actions/auth";
+import * as cartActions from "../../store/actions/cart";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -28,7 +34,7 @@ function App(props) {
   const [isFetching, setIsFetching] = useState(false);
   const { token, userId } = useSelector((state) => state.auth);
   const [shippingAddresses, setShippingAddresses] = useState(null);
-  const [defaultAddress, setDefaultAddress] = useState(null)
+  const [defaultAddress, setDefaultAddress] = useState(null);
 
   // Let fetch data data
   const fetchUserShippingDetails = useCallback(async () => {
@@ -46,31 +52,29 @@ function App(props) {
         // If there is no shipping then
         if (resData !== null && Object.entries(resData).length > 0) {
           //  shipping is provided
-         
+
           const loadedOrders = {};
           const apped = {};
-          for(const key in resData) {
+          for (const key in resData) {
             loadedOrders[key] = resData[key];
           }
-         console.log(resData)
-          Object.entries(resData).forEach((entry) => console.log(entry[0]))
+          console.log(resData);
+          Object.entries(resData).forEach((entry) => console.log(entry[0]));
           setShippingAddresses(resData);
         }
         setIsFetching(false);
-        
       } catch (error) {
         setIsFetching(false);
         console.log(error);
       }
     }
   }, []);
- 
-  // default address 
-  
+
+  // default address
+
   useEffect(() => {
     fetchUserShippingDetails();
   }, [fetchUserShippingDetails]);
-
 
   // Lets verify the permission is set const
   const verifyPermissions = async () => {
@@ -86,100 +90,126 @@ function App(props) {
     return true;
   };
 
- 
-
-  const changeShippingBlock =  useCallback((id) => {
-    setDefaultAddress(id)
-  }, [defaultAddress])
+  const changeShippingBlock = (id) => {
+    console.log(id);
+    setDefaultAddress(id);
+  };
 
   const editShippingAddress = (shippingID, details) => {
-    props.navigation.navigate('EditShippingDetails', {shippingAddressId:shippingID, editMode: true, shippingDeatils: details})
-    console.log(shippingID)
-  }
-  
-  
+    props.navigation.navigate("EditShippingDetails", {
+      shippingAddressId: shippingID,
+      editMode: true,
+      shippingDeatils: details,
+    });
+  };
+
   const getShippingInCompoennt = useMemo(() => {
-     if(!isFetching) {
-       if(shippingAddresses !== null && Object.entries(shippingAddresses).length > 0) {
-       return Object.entries(shippingAddresses).map((entry, index) => <TouchableOpacity onPress = {() => changeShippingBlock(entry[0])} key = {index} style={[styles.blockTouch, entry[0] == defaultAddress ? styles.selectedAddress : styles.none]}>
-       <View style={[styles.fistRow]}>
-         <View style={[styles.specificationView, styles.custom0]}>
-           <Ionicons name="map-marker" size={20} />
-       <Text> {entry[1]['addressLabel']}</Text>
-         </View>
-         <View style={[styles.specificationView, styles.custom0]}>
-           <TouchableOpacity style={[styles.specificationView]} onPress = {() => editShippingAddress(entry[0], entry[1])}>
-             <Ionicons name="edit" size={20} />
-             <Text> Edit </Text>
-           </TouchableOpacity>
-           <TouchableOpacity style={[styles.specificationView]} onPress = {() => deleteShippingById(entry[0])}>
-             <Ionicons name="trash" size={20} />
-             <Text> Delete</Text>
-           </TouchableOpacity>
-         </View>
-       </View>
-       <View style={[styles.infoContainer, styles.custom1]}>
-         <View style={[styles.fistRow, styles.padding15TopBotton]}>
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={styles.tdText}>Name</Text>
-           </View>
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={[styles.tableBody]}>{entry[1]['firstName']}</Text>
-           </View>
-         </View>
+    if (!isFetching) {
+      if (
+        shippingAddresses !== null &&
+        Object.entries(shippingAddresses).length > 0
+      ) {
+        return Object.entries(shippingAddresses).map((entry, index) => (
+          <TouchableOpacity
+            onPress={() => changeShippingBlock(entry[0])}
+            key={index}
+            style={[
+              styles.blockTouch,
+              entry[0] == defaultAddress ? styles.selectedAddress : styles.none,
+            ]}
+          >
+            <View style={[styles.fistRow]}>
+              <View style={[styles.specificationView, styles.custom0]}>
+                <Ionicons name="map-marker" size={20} />
+                <Text> {entry[1]["addressLabel"]}</Text>
+              </View>
+              <View style={[styles.specificationView, styles.custom0]}>
+                <TouchableOpacity
+                  style={[styles.specificationView]}
+                  onPress={() => editShippingAddress(entry[0], entry[1])}
+                >
+                  <Ionicons name="edit" size={20} />
+                  <Text> Edit </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.specificationView]}
+                  onPress={() => deleteShippingById(entry[0])}
+                >
+                  <Ionicons name="trash" size={20} />
+                  <Text> Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={[styles.infoContainer, styles.custom1]}>
+              <View style={[styles.fistRow, styles.padding15TopBotton]}>
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={styles.tdText}>Name</Text>
+                </View>
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={[styles.tableBody]}>
+                    {entry[1]["firstName"]}
+                  </Text>
+                </View>
+              </View>
 
-         <View style={[styles.fistRow, styles.padding15TopBotton]}>
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={styles.tdText}>Address</Text>
-           </View>
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={[styles.tableBody]}>
-             {entry[1]['additionalAddress']}
-          
-             </Text>
-           </View>
-         </View>
+              <View style={[styles.fistRow, styles.padding15TopBotton]}>
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={styles.tdText}>Address</Text>
+                </View>
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={[styles.tableBody]}>
+                    {entry[1]["additionalAddress"]}
+                  </Text>
+                </View>
+              </View>
 
-         <View
-           style={[
-             styles.fistRow,
-             styles.padding15TopBotton,
-             styles.marginTopX,
-           ]}
-         >
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={styles.tdText}>Mobile Number</Text>
-           </View>
-           <View style={[styles.specificationView, styles.stylesTd]}>
-             <Text style={[styles.tableBody]}>
-             {entry[1]['phoneCode']+entry[1]['mobileNumber']}
-             
-               <Ionicons
-                 name="check-circle"
-                 size={20}
-                 style={styles.circleIconCheck}
-               ></Ionicons>
-             </Text>
-           </View>
-         </View>
-       </View>
-     </TouchableOpacity>)
-       }
-       return <View><Text>Nothing found</Text></View>;
-     }  
-     return <View><Text>Fetching</Text></View>;
+              <View
+                style={[
+                  styles.fistRow,
+                  styles.padding15TopBotton,
+                  styles.marginTopX,
+                ]}
+              >
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={styles.tdText}>Mobile Number</Text>
+                </View>
+                <View style={[styles.specificationView, styles.stylesTd]}>
+                  <Text style={[styles.tableBody]}>
+                    {entry[1]["phoneCode"] + entry[1]["mobileNumber"]}
 
-  }, [shippingAddresses, isFetching, defaultAddress])
+                    <Ionicons
+                      name="check-circle"
+                      size={20}
+                      style={styles.circleIconCheck}
+                    ></Ionicons>
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ));
+      }
+      return (
+        <View>
+          <Text>Nothing found</Text>
+        </View>
+      );
+    }
+    return (
+      <View>
+        <Text>Fetching</Text>
+      </View>
+    );
+  }, [shippingAddresses, isFetching, defaultAddress]);
 
-  
-  // Delete the shipping 
-  const deletePressed = async(id) => {
-    try{
-      let deleteShippingById =  authActions.deleteShipping(id);
+  // Delete the shipping
+  const deletePressed = async (id) => {
+    try {
+      let deleteShippingById = authActions.deleteShipping(id);
       dispatch(await deleteShippingById);
-      props.navigation.push('ShippingDetails');
+      props.navigation.push("ShippingDetails");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -191,69 +221,88 @@ function App(props) {
         {
           text: "Cancel",
           onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
+          style: "cancel",
         },
-        { text: "OK", onPress: () => {deletePressed(id)} }
+        {
+          text: "OK",
+          onPress: () => {
+            deletePressed(id);
+          },
+        },
       ],
       { cancelable: false }
     );
-  }
+  };
 
+  // Dispatch select shipping addresss
+  const continueAction = useCallback(
+    (id) => {
+      if (
+        shippingAddresses !== null &&
+        Object.entries(shippingAddresses).length > 0
+      ) {
+        let selectedShipping = Object.fromEntries(
+          Object.entries(shippingAddresses).filter((sid) => sid[0] === id)
+        );
+        dispatch(cartActions.selectedShipping(selectedShipping));
+        props.navigation.navigate("PaymentScreen", {
+          shippingID: defaultAddress,
+        });
+      }
+    },
+    [shippingAddresses]
+  );
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-    <View>
-     {getShippingInCompoennt}
-      
-     
-      
-      
+        <View>
+          {getShippingInCompoennt}
+
+          <TouchableOpacity
+            style={styles.addNewButtonWarper}
+            onPress={() => props.navigation.navigate("Map")}
+          >
+            <Text style={styles.poppinsRegular}>
+              {" "}
+              <Ionicons name="plus" size={14} /> Add a new address
+            </Text>
+          </TouchableOpacity>
+          {/* {() => props.navigation.navigate('Map')} */}
+        </View>
+      </ScrollView>
       <TouchableOpacity
-        style={styles.addNewButtonWarper}
-        onPress={() => props.navigation.navigate("Map")}
+        style={styles.continueBtn}
+        onPress={() => continueAction(defaultAddress)}
       >
-        <Text style={styles.poppinsRegular}>
-          {" "}
-          <Ionicons name="plus" size={14} /> Add a new address
-        </Text>
+        <Text style={styles.continueBtnTxt}> Contineu</Text>
       </TouchableOpacity>
-      {/* {() => props.navigation.navigate('Map')} */}
-    </View>
-    </ScrollView>
-    <TouchableOpacity style = {styles.continueBtn} onPress = {() => props.navigation.navigate('PaymentScreen', {shippingID: defaultAddress})}>
-       <Text style = {styles.continueBtnTxt}> Contineu</Text>
-    </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  continueBtn:{
-
-    position:'absolute',
-    bottom:0,
-    backgroundColor:'#3866de',
-    width:'100%'
-
+  continueBtn: {
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "#3866de",
+    width: "100%",
   },
-  continueBtnTxt:{
-    fontFamily:'Poppins-SemiBold',
-    color: '#f0f0f0',
-    textAlign:'center',
-    paddingVertical:10,
-    textTransform:'uppercase',
-    fontSize:14
+  continueBtnTxt: {
+    fontFamily: "Poppins-SemiBold",
+    color: "#f0f0f0",
+    textAlign: "center",
+    paddingVertical: 10,
+    textTransform: "uppercase",
+    fontSize: 14,
   },
-  selectedAddress:{
-    borderWidth:2,
-    borderColor:'green'
+  selectedAddress: {
+    borderWidth: 2,
+    borderColor: "green",
   },
   container: {
     flex: 1,
-   
   },
   scrollView: {
-   
     marginHorizontal: 0,
   },
   blockTouch: {},
@@ -303,9 +352,7 @@ const styles = StyleSheet.create({
   circleIconCheck: {
     color: "green",
   },
-  padding15TopBotton: {
-   
-  },
+  padding15TopBotton: {},
   poppinsRegular: {
     fontFamily: "Poppins-Regular",
   },
@@ -318,9 +365,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     color: "#414551",
   },
-  marginTopX: {
-    
-  },
+  marginTopX: {},
 
   contentMiddle: { flex: 1, alignItems: "center", justifyContent: "center" },
 
