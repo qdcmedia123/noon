@@ -1,11 +1,40 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  hr:{
+    marginTop:10,
+    marginBottom:15,
+    backgroundColor:'#d8deee',
+    height:2
+  },
+  defaultBackFade: {
+    color:'#424651'
+  },
+  defaultRed: {
+    color:'#f16d6b'
+  },
+  warning:{
+    backgroundColor:'#feded3',
+    
+
+  },  
+  bgYellow:{
+    backgroundColor:'#fffef1'
+  },
+ 
+  tableRow:{
+    flex:1,
+    flexDirection:'row',
+    alignContent:'space-around'
+  },
   font1:{
     fontSize:12
   },
   blueIcon:{
     color:'#738ccc'
+  },
+  defaultBlack: {
+    color:'#3f4553'
   },
   defaultBlue:{
     color:'#3866de'
