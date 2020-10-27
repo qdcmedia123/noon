@@ -25,6 +25,8 @@ import Ionicons from "react-native-vector-icons/FontAwesome5";
 import * as cartActions from "../../store/actions/cart";
 import { styles } from "../../assets/css/styles";
 import logo from '../../assets/img/logo1.png';
+import expressPng from '../../assets/img/express.png';
+import { Toast } from "native-base";
 
 const App = () => {
   // Component states
@@ -411,36 +413,48 @@ const App = () => {
               styles.flex1,
               styles.orderReview,
               styles.paddingHorizontal,
+              styles.whiteBG,
+              styles.mt15,
+              styles.mb50
             ]}
           >
-            <Text>REVIEW YOUR ORDER</Text>
+            <Text style = {[styles.Poppins_Bold, styles.paddingVertical2X]}>REVIEW YOUR ORDER</Text>
             <View style={styles.cartItem}>
-              <Text>Love JOJO</Text>
-              <View>
-                <View>
-                  <Text>99% Aloe Vera Soothing Mostjweous Gel green 300ml</Text>
-                  <Text>AED 5.00</Text>
+              <Text style = {[styles.Poppins_Medium, styles.grayText, styles.paddingVertical]}>Love JOJO</Text>
+              <View style = {[styles.rc]}>
+                <View style= {[styles.discription]}  >
+                  <Text style= {[styles.Poppins_Bold]} >99% Aloe Vera Soothing Mostjweous Gel green 300ml</Text>
+                  <Text style= {[styles.Poppins_Bold, styles.fs20, styles.defaultBackFade]}>AED 5.00</Text>
                 </View>
 
-                <View>
-                  <Image source = {logo} />
+                <View style= {[styles.pImage]}>
+                  <Image source = {logo}/>
                 </View>
               </View>
 
-              <Text>QTY 1</Text>
-              <View>
-                <Text>Order in the next</Text><Text>18 hrs 23 mins</Text><Text>and received it by</Text><Text>Sun, Sep 20</Text>
+              <Text style ={[styles.grayText, styles.Poppins_Medium]}>QTY 1</Text>
+              <View style={[styles.txtOrder]}>
+                <Text style= {[styles.Poppins_Medium, styles.defaultBackFade]} >Order in the next</Text><Text style={styles.Poppins_Bold}> 18 hrs 23 mins</Text><Text style={[styles.Poppins_Medium, styles.defaultBackFade]}> and received it by</Text><Text style= {[styles.Poppins_Bold, styles.greenText]}>Sun, Sep 20</Text>
               </View>
               
-              <Text><Ionicons name = "home"/>This Item cannnot be excahgned or returned</Text>
-              <View>
-                <Text>Sold By MRM</Text>
-                <Text>Market Icon</Text>
+              <Text style = {[styles.Poppins_Medium, styles.defaultBlack]}><Ionicons name = "exchange-alt" size = {18}/>  This Item cannnot be excahgned or returned</Text>
+              <View style= {[styles.paddingVertical,styles.txtOrder]}>
+                <Text style = {[styles.Poppins_Regular, styles.flex8]}>Sold By <Text style= {styles.Poppins_Bold}>MRM</Text></Text>
+                <Image source = {expressPng} style= {styles.rightAlign}/>
               </View>
             </View>
           </View>
+        
+            
         </View>
       </ScrollView>
+      <View style={[styles.continueBtn]}>        
+       
+        <Text style={styles.continueBtnTxt}> PLACE ORDER</Text>
+        
+        
+                
+            </View>
     </SafeAreaView>
   );
 };

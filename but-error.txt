@@ -1,0 +1,1 @@
+TypeError: this.requestAnimationFrame is not a function. (In 'this.requestAnimationFrame(function(){_this5.goToPage(_this5.state.currentPage)})', 'this.requestAnimationFrame') is undefined

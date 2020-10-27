@@ -1,6 +1,76 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  continueBtn: {
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "#3866de",
+    width: "100%",
+  },
+  continueBtnTxt: {
+    fontFamily: "Poppins-SemiBold",
+    color: "#f0f0f0",
+    textAlign: "center",
+    paddingVertical: 10,
+    textTransform: "uppercase",
+    fontSize: 14,
+  },
+
+  defaultButton:{
+    marginTop:15,
+    backgroundColor:'gray',
+    width:'100%',
+  },
+  poC:{
+    display:'flex',
+
+  },
+  orderNowContainer:{
+    position:'absolute',
+    bottom:0,
+    width:'100%',
+    height:'auto',
+    marginTop:20
+  },
+  mb15:{
+    marginBottom:15
+  },
+  mt15:{
+    marginTop:15
+  },
+  mb50:{
+    marginBottom:50
+  }
+  ,
+  flex8:{
+    flex:8
+  },
+  alighRight:{
+    flex:2
+  },
+  greenText:{
+    color:'green'
+  }
+  ,
+  txtOrder:{
+    flex:1,
+    flexDirection:'row',
+    flexWrap:'wrap'
+  },
+  
+  fs20:{
+    fontSize:20
+  },
+  pImage:{
+    flex:2
+  },
+  discription:{
+    flex:8
+  },
+  rc:{
+    flex:1,
+    flexDirection:'row'
+  },
   hr:{
     marginTop:10,
     marginBottom:15,
@@ -58,8 +128,14 @@ export const styles = StyleSheet.create({
   green:{
     color:'#38ad06'
   },
+  paddingVertical2X:{
+    paddingVertical:10
+  },
   paddingVertical:{
     paddingVertical:5
+  },
+  paddingHorizontal2X:{
+    paddingHorizontal:20
   },
   paddingHorizontal:{
     paddingHorizontal:10
