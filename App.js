@@ -13,6 +13,14 @@ import ShopNavigator from './navigation/ShopNavigator';
 import productsReducer from './store/reducers/products';
 import cartReducer from './store/reducers/cart';
 import authReducer from './store/reducers/auth';
+import stripe from 'tipsi-stripe';
+stripe.setOptions({
+  publishableKey: 'pk_test_5eCrZUNWnbmLG8iLe6wILAsy008tnT6WEo',
+  merchantId: 'Test',
+  androidPayMode: 'test', // if you are testing
+});
+
+console.log(stripe);
 
 const rootReducer = combineReducers({
   products:productsReducer,
