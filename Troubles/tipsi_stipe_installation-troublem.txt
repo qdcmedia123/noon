@@ -1,0 +1,21 @@
+Fuck I had many days problem which installing tipsi stripe, I dont know why there was too much error 
+
+All I was trying to make it work because react-native version was different 
+
+Helpful lik 
+https://github.com/tipsi/tipsi-stripe/issues/504
+
+link: android/app/build.gradle
+
+
+dependency {
+.
+.
++    implementation 'com.google.firebase:firebase-core:16.0.7'
+.
+.
+.
+}
+
+
++ is what I have added then Its started to work fuck you

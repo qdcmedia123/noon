@@ -1,0 +1,2 @@
+https://salesforce.stackexchange.com/questions/123743/is-there-any-way-to-revoke-refresh-token-for-a-connected-app-automatically-as13:17
+https://salesforce.stackexchange.com/questions/123743/is-there-any-way-to-revoke-refresh-token-for-a-connected-app-automatically-as
