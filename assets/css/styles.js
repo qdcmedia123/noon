@@ -1,6 +1,12 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  hide:{
+    display:'none'
+  },
+  show: {
+    display:'flex'
+  },
   continueBtn: {
     position: "absolute",
     bottom: 0,

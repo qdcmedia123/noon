@@ -18,15 +18,23 @@ import {
   SafeAreaView,
   CheckBox,
   Switch,
-  Image
+  Image,
 } from "react-native";
 
 import Ionicons from "react-native-vector-icons/FontAwesome5";
 import * as cartActions from "../../store/actions/cart";
 import { styles } from "../../assets/css/styles";
-import logo from '../../assets/img/logo1.png';
-import expressPng from '../../assets/img/express.png';
-import { Toast } from "native-base";
+import logo from "../../assets/img/logo1.png";
+import expressPng from "../../assets/img/express.png";
+import ButtonUI from "../../components/UI/Button";
+import stripe from "tipsi-stripe";
+import axios from 'axios';
+
+stripe.setOptions({
+  publishableKey: "pk_test_5eCrZUNWnbmLG8iLe6wILAsy008tnT6WEo",
+  merchantId: "Test",
+  androidPayMode: "test", // if you are testing
+});
 
 const App = () => {
   // Component states
@@ -34,6 +42,36 @@ const App = () => {
     paymentWithCard: false,
     paymentWithCash: false,
     leadAtMyDoor: false,
+  });
+
+  const [paymentStates, setPaymentStates] = useState({ loading: false });
+  const [customer, customerState] = useState({
+    loading: false,
+    token: null,
+    email: "jaimaika17@gmail.com",
+    customer: {
+      address: {
+        line1: "Canary Place", // Required field
+        line2: "3",
+        city: "Macon",
+        state: "Georgia",
+        country: "US",
+        postal_code: "31217",
+        state: "",
+      },
+      shipping: {
+        address: {
+          line1: "34535",
+          line2: "3",
+          city: "sydney",
+          country: "australia",
+          postal_code: 46456456,
+          state: "",
+        },
+      },
+      name: "bharat kumar shah",
+      phone: "345345345",
+    },
   });
 
   const [gulfForFood, setGulfForFood] = useState(0);
@@ -47,6 +85,79 @@ const App = () => {
 
     setGulfForFood((gulfForFood) => gulfForFood - 10 * 2);
   }, [gulfForFood]);
+
+  const handleCardPayPress = useCallback(async () => {
+    try {
+      setPaymentStates({ ...paymentStates, loading: true, token: null });
+
+      const token = await stripe.paymentRequestWithCardForm({
+        // Only iOS support this options
+        smsAutofillDisabled: true,
+        requiredBillingAddressFields: "full",
+        prefilledInformation: {
+          billingAddress: { ...paymentStates, email: customer.email },
+        },
+      });
+
+      console.log('payment token');
+      console.log(token)
+
+      axios({
+        method: "POST",
+        url: "http://localhost:5000/api/stripe/create_customer",
+        data: {
+          email: customer.email,
+          customer: { ...customer, name: customer.name },
+        },
+      })
+        .then((response) => {
+          console.log(JSON.stringify(response));
+          setPaymentStates({ ...paymentStates, loading: false });
+        })
+        .catch((error) => {
+          setPaymentStates({ ...paymentStates, loading: false });
+          console.log(error);
+        });
+
+
+        setPaymentStates({ ...paymentStates, loading: false, token });
+    } catch (error) {
+      console.log(error);
+      setPaymentStates({ ...paymentStates, loading: false });
+    }
+  }, [paymentStates, customer]);
+
+  useEffect(() => {
+    if (componentState.paymentWithCard === true) {
+      handleCardPayPress();
+    }
+  }, [componentState]);
+
+  const makePayment = useCallback(() => {
+    setPaymentStates({ ...paymentStates, loading: true });
+    axios({
+      method: "POST",
+      url: "http://localhost:5000/api/stripe/payment",
+      data: {
+        amount: 1000,
+        currency: "usd",
+        token: paymentStates.token.tokenId,
+        customer: customer,
+      },
+    });
+  }, [paymentStates, customer]);
+
+  // If user press place order button
+  const placeOrder = () =>
+    useCallback(() => {
+      // Check the payment method
+      if (componentState.paymentWithCard) {
+        // Process the payment with card
+        // Run the function make payment
+      } else {
+        // Process payment with cod
+      }
+    }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,6 +200,7 @@ const App = () => {
               >
                 Bharat Shah {"\n"}or any number of other features it supports
                 out of the box.
+                Token: {typeof paymentStates.token !== 'undefined' && JSON.stringify(paymentStates.token)}
               </Text>
 
               <Text style={[styles.defaultPadding, styles.Poppins_Medium]}>
@@ -150,8 +262,10 @@ const App = () => {
                   </View>
                 </View>
                 <View>
-                  {/*<Text style = {styles.Poppins_Regular}> Here Will be card form</Text>
-                   */}
+                  {/*
+                   <Text style = {[styles.Poppins_Regular]}>A none-refuntable fee of AED 10.00 applies on cah payment. To save on his aoumt please proceed with debit/cardit card</Text>
+                 
+                  */}
                 </View>
               </View>
 
@@ -187,9 +301,24 @@ const App = () => {
                     />
                   </View>
                 </View>
-                <View>
-                  {/*<Text> Here Will be card form</Text>
-                   */}
+                <View
+                  style={[
+                    componentState.paymentWithCash === true
+                      ? styles.show
+                      : styles.hide,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.defaultBackFade,
+                      styles.Poppins_Regular,
+                      styles.paddingVertical,
+                      styles.paddingHorizontal,
+                    ]}
+                  >
+                    A none-refuntable fee of AED 10.00 applies on cah payment.
+                    To save on his aoumt please proceed with debit/cardit card
+                  </Text>
                 </View>
               </View>
             </View>
@@ -415,46 +544,77 @@ const App = () => {
               styles.paddingHorizontal,
               styles.whiteBG,
               styles.mt15,
-              styles.mb50
+              styles.mb50,
             ]}
           >
-            <Text style = {[styles.Poppins_Bold, styles.paddingVertical2X]}>REVIEW YOUR ORDER</Text>
+            <Text style={[styles.Poppins_Bold, styles.paddingVertical2X]}>
+              REVIEW YOUR ORDER
+            </Text>
             <View style={styles.cartItem}>
-              <Text style = {[styles.Poppins_Medium, styles.grayText, styles.paddingVertical]}>Love JOJO</Text>
-              <View style = {[styles.rc]}>
-                <View style= {[styles.discription]}  >
-                  <Text style= {[styles.Poppins_Bold]} >99% Aloe Vera Soothing Mostjweous Gel green 300ml</Text>
-                  <Text style= {[styles.Poppins_Bold, styles.fs20, styles.defaultBackFade]}>AED 5.00</Text>
+              <Text
+                style={[
+                  styles.Poppins_Medium,
+                  styles.grayText,
+                  styles.paddingVertical,
+                ]}
+              >
+                Love JOJO
+              </Text>
+              <View style={[styles.rc]}>
+                <View style={[styles.discription]}>
+                  <Text style={[styles.Poppins_Bold]}>
+                    99% Aloe Vera Soothing Mostjweous Gel green 300ml
+                  </Text>
+                  <Text
+                    style={[
+                      styles.Poppins_Bold,
+                      styles.fs20,
+                      styles.defaultBackFade,
+                    ]}
+                  >
+                    AED 5.00
+                  </Text>
                 </View>
 
-                <View style= {[styles.pImage]}>
-                  <Image source = {logo}/>
+                <View style={[styles.pImage]}>
+                  <Image source={logo} />
                 </View>
               </View>
 
-              <Text style ={[styles.grayText, styles.Poppins_Medium]}>QTY 1</Text>
+              <Text style={[styles.grayText, styles.Poppins_Medium]}>
+                QTY 1
+              </Text>
               <View style={[styles.txtOrder]}>
-                <Text style= {[styles.Poppins_Medium, styles.defaultBackFade]} >Order in the next</Text><Text style={styles.Poppins_Bold}> 18 hrs 23 mins</Text><Text style={[styles.Poppins_Medium, styles.defaultBackFade]}> and received it by</Text><Text style= {[styles.Poppins_Bold, styles.greenText]}>Sun, Sep 20</Text>
+                <Text style={[styles.Poppins_Medium, styles.defaultBackFade]}>
+                  Order in the next
+                </Text>
+                <Text style={styles.Poppins_Bold}> 18 hrs 23 mins</Text>
+                <Text style={[styles.Poppins_Medium, styles.defaultBackFade]}>
+                  {" "}
+                  and received it by
+                </Text>
+                <Text style={[styles.Poppins_Bold, styles.greenText]}>
+                  Sun, Sep 20
+                </Text>
               </View>
-              
-              <Text style = {[styles.Poppins_Medium, styles.defaultBlack]}><Ionicons name = "exchange-alt" size = {18}/>  This Item cannnot be excahgned or returned</Text>
-              <View style= {[styles.paddingVertical,styles.txtOrder]}>
-                <Text style = {[styles.Poppins_Regular, styles.flex8]}>Sold By <Text style= {styles.Poppins_Bold}>MRM</Text></Text>
-                <Image source = {expressPng} style= {styles.rightAlign}/>
+
+              <Text style={[styles.Poppins_Medium, styles.defaultBlack]}>
+                <Ionicons name="exchange-alt" size={18} /> This Item cannnot be
+                excahgned or returned
+              </Text>
+              <View style={[styles.paddingVertical, styles.txtOrder]}>
+                <Text style={[styles.Poppins_Regular, styles.flex8]}>
+                  Sold By <Text style={styles.Poppins_Bold}>MRM</Text>
+                </Text>
+                <Image source={expressPng} style={styles.rightAlign} />
               </View>
             </View>
           </View>
-        
-            
         </View>
       </ScrollView>
-      <View style={[styles.continueBtn]}>        
-       
+      <View style={[styles.continueBtn]}>
         <Text style={styles.continueBtnTxt}> PLACE ORDER</Text>
-        
-        
-                
-            </View>
+      </View>
     </SafeAreaView>
   );
 };

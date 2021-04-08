@@ -1,6 +1,5 @@
 import React from 'react';
 import { TouchableOpacity, Image, StyleSheet } from 'react-native';
-
 import ENV from '../../env';
 
 const MapPreview = props => {
